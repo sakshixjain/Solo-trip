@@ -1,12 +1,12 @@
 const express = require("express");
 const app= express();
 require("dotenv").config();
-// const userRoutes= require("./routes/userRoutes");
+const userRoutes= require("./routes/userRoutes");
 const db= require("./config/db");
 
 app.use(express.json());
 
-// app.use("api/users",userRoutes);
+app.use("/",userRoutes);
 
 
 app.get("/", (req,res)=>{
