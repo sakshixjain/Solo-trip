@@ -9,6 +9,12 @@ app.use(express.json());
 app.use("/",userRoutes);
 
 
+db.authenticate()
+  .then(() => console.log("Database Connected"))
+  .catch(err => console.log(err));
+
+db.sync({ alter: true });
+
 app.get("/", (req,res)=>{
 res.send("backend is running");
 });
@@ -17,12 +23,4 @@ res.send("backend is running");
 app.listen(3000,()=>{
     console.log("server is running on port 3000");
 });
-
-db.connect((err)=>{
-    if(err){
-        console.log("database error is "+err);
-    }
-    else{
-        console.log("database is running successfully");
-    }
-});
+ 
