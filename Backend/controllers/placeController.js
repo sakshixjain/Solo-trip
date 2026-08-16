@@ -1,7 +1,5 @@
-const Place = require("../models/Place");
-const Category = require("../models/Category");
-const Review = require("../models/Review");
-const PlaceImage = require("../models/PlaceImage");
+const { Place, Category, Review, PlaceImage } = require("../models");
+const { Op } = require("sequelize");
 
 
 // ========================================

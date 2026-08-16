@@ -1,6 +1,4 @@
-const Review = require("../models/Review");
-const User = require("../models/User");
-const Place = require("../models/Place");
+const { Review, User, Place } = require("../models");
 
 // ==========================
 // Add Review

@@ -1,10 +1,10 @@
-const User = require("./User");
-const Category = require("./Category");
-const Place = require("./Place");
-const Review = require("./Review");
-const Favorite = require("./Favorite");
-const Trip = require("./Trip");
-const PlaceImage = require("./PlaceImage");
+const User = require("./user");
+const Category = require("./category");
+const Place = require("./place");
+const Review = require("./review");
+const Favorite = require("./favorite");
+const Trip = require("./trip");
+const PlaceImage = require("./placeImage");
 
 // Category -> Place
 Category.hasMany(Place, { foreignKey: "category_id" });

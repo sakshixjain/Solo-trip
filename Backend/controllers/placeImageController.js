@@ -1,5 +1,4 @@
-const PlaceImage = require("../models/PlaceImage");
-const Place = require("../models/Place");
+const { PlaceImage, Place } = require("../models");
 
 // ==========================
 // Add Image

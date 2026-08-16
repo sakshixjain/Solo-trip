@@ -1,5 +1,5 @@
-const express= require("express");
-const User= require("../models/user");
+const express = require("express");
+const { User } = require("../models");
 const generateToken = require("../utils/generateToken");
 const bcrypt = require("bcrypt");
 

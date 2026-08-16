@@ -1,6 +1,4 @@
-const Favorite = require("../models/Favorite");
-const User = require("../models/User");
-const Place = require("../models/Place");
+const { Favorite, User, Place } = require("../models");
 
 // ==========================
 // Add Favorite
