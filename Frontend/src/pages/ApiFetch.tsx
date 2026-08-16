@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 type Article = {
   article_id?: string | number;
@@ -6,7 +6,7 @@ type Article = {
   [key: string]: any;
 };
 
-export default function ApiFetch(): JSX.Element {
+export default function ApiFetch() {
   const [users, setUsers] = useState<Article[]>([]);
 
   const result = async () => {
@@ -16,9 +16,6 @@ export default function ApiFetch(): JSX.Element {
       );
 
       const data = await response.json();
-
-      console.log(data.results);
-
       setUsers(Array.isArray(data.results) ? data.results : []);
     } catch (error) {
       console.log(error);
@@ -31,12 +28,12 @@ export default function ApiFetch(): JSX.Element {
   }, []);
 
   return (
-    <>
+    <div>
       {users.map((user, i) => (
         <div key={user.article_id ?? i}>
           <h3>{user.title ?? 'No title'}</h3>
         </div>
       ))}
-    </>
+    </div>
   );
 }
