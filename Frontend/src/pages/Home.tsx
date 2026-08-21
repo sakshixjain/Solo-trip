@@ -7,10 +7,13 @@ import {
   Smile, 
   Camera, 
   MessageSquare,
-  ThumbsUp
+  ThumbsUp,
+  MapPin,
+  Map as MapIcon
 } from 'lucide-react';
 import { SearchWidget } from '../components/SearchWidget';
 import { DestinationCard } from '../components/DestinationCard';
+import { GoogleMapView } from '../components/GoogleMapView';
 import { StoryModal } from '../components/StoryModal';
 import { DiscussionModal } from '../components/DiscussionModal';
 import type { Destination, Story, Discussion } from '../services/api';
@@ -48,32 +51,29 @@ export const Home: React.FC = () => {
         
         <div className="container" style={{ width: '100%' }}>
           <div className="hero-content animate-fade-in">
+            <div className="hero-badge">
+              <Compass size={16} /> <span>Built for Solo Explorers</span>
+            </div>
+            
             <h1 className="hero-title">
-              Explore the world.<br />Discover yourself.
+              Explore the World.<br />
+              <span>Discover Yourself.</span>
             </h1>
+            
             <p className="hero-subtitle">
-              Solo travel tips, curated trips, real stories and a community that’s got your back.
+              Solo travel tips, curated trips, real stories, and a community that's got your back.
             </p>
-            <div className="hero-buttons">
-              <Link to="/trips" className="btn btn-primary btn-lg">
-                Explore Trips
-              </Link>
-              <button 
-                className="btn btn-outline-white btn-lg"
-                onClick={() => setIsWriteStoryOpen(true)}
-              >
-                Share Your Story
-              </button>
+
+            {/* Hero Search Box / Widget */}
+            <div className="hero-search-container">
+              <SearchWidget />
             </div>
           </div>
         </div>
-
-        {/* Floating Search Bar on bottom of hero */}
-        <SearchWidget />
       </section>
 
       {/* 2. Popular Destinations Section */}
-      <section className="section" style={{ paddingTop: 60 }}>
+      <section className="section">
         <div className="container">
           <div className="section-header">
             <div>
@@ -89,6 +89,35 @@ export const Home: React.FC = () => {
             {destinations.slice(0, 5).map((dest) => (
               <DestinationCard key={dest.id} destination={dest} />
             ))}
+          </div>
+
+          {/* Interactive Google Map Section */}
+          <div style={{ marginTop: 48, background: '#ffffff', borderRadius: 24, padding: '32px 28px', border: '1px solid #e2e8f0', boxShadow: '0 8px 30px rgba(0,0,0,0.04)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0284c7', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+                  <MapIcon size={16} /> Interactive Map Explorer
+                </div>
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                  Discover Places by Location
+                </h3>
+              </div>
+              <Link 
+                to="/destinations" 
+                className="btn btn-outline btn-sm"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              >
+                <MapPin size={14} /> Fullscreen Map View <ArrowRight size={14} />
+              </Link>
+            </div>
+
+            <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+              <GoogleMapView
+                destinations={destinations}
+                height="420px"
+                showControls={true}
+              />
+            </div>
           </div>
         </div>
       </section>

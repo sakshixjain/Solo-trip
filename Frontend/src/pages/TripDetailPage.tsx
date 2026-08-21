@@ -11,9 +11,13 @@ import {
   Users, 
   CheckCircle2, 
   XCircle, 
-  ShieldCheck 
+  ShieldCheck,
+  MapPin,
+  Navigation,
+  ExternalLink
 } from 'lucide-react';
 import { BookingModal } from '../components/BookingModal';
+import { GoogleMapView } from '../components/GoogleMapView';
 import type { Destination } from '../services/api';
 import { fetchDestinationById, INITIAL_DESTINATIONS } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -28,7 +32,7 @@ export const TripDetailPage: React.FC = () => {
   const [destination, setDestination] = useState<Destination>(() => {
     return INITIAL_DESTINATIONS.find((d) => String(d.id) === String(id)) || INITIAL_DESTINATIONS[0];
   });
-  const [activeTab, setActiveTab] = useState<'overview' | 'itinerary' | 'inclusions' | 'reviews' | 'gallery'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'itinerary' | 'map' | 'inclusions' | 'reviews' | 'gallery'>('overview');
   const [isBookingOpen, setIsBookingOpen] = useState<boolean>(false);
   const [selectedPhoto, setSelectedPhoto] = useState<string>(destination.image);
 
@@ -197,6 +201,13 @@ export const TripDetailPage: React.FC = () => {
               Itinerary
             </button>
             <button
+              className={`tab-btn ${activeTab === 'map' ? 'active' : ''}`}
+              onClick={() => setActiveTab('map')}
+            >
+              <MapPin size={14} style={{ marginRight: 4, display: 'inline' }} />
+              Location & Map
+            </button>
+            <button
               className={`tab-btn ${activeTab === 'inclusions' ? 'active' : ''}`}
               onClick={() => setActiveTab('inclusions')}
             >
@@ -236,6 +247,98 @@ export const TripDetailPage: React.FC = () => {
                   <span><strong>Local Guide Support:</strong> 24/7 on-ground assistance and safety leader.</span>
                 </li>
               </ul>
+
+              {/* Quick Map Preview Widget */}
+              <div style={{ marginTop: 24, marginBottom: 28 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700 }}>
+                    Location on Google Map
+                  </h3>
+                  <button 
+                    onClick={() => setActiveTab('map')} 
+                    className="btn btn-outline btn-sm"
+                    style={{ fontSize: '0.82rem', padding: '4px 12px' }}
+                  >
+                    Open Full Map View &rarr;
+                  </button>
+                </div>
+                <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.04)' }}>
+                  <GoogleMapView 
+                    destination={destination} 
+                    height="280px" 
+                    zoom={13} 
+                    showControls={false} 
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Tab Content 2: Location & Map */}
+          {activeTab === 'map' && (
+            <div className="animate-fade-in">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>
+                    Explore {destination.name} on Map
+                  </h3>
+                  <p style={{ color: '#64748b', fontSize: '0.9rem', margin: '4px 0 0' }}>
+                    Interactive Google Map with satellite, terrain layers, and live GPS coordinates
+                  </p>
+                </div>
+
+                {destination.latitude != null && (
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${destination.latitude},${destination.longitude}&destination_place_id=${encodeURIComponent(destination.name)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary btn-sm"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                  >
+                    <Navigation size={14} /> Open Navigation in Google Maps <ExternalLink size={12} />
+                  </a>
+                )}
+              </div>
+
+              {/* Main Interactive Google Map Component */}
+              <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
+                <GoogleMapView 
+                  destination={destination} 
+                  height="460px" 
+                  zoom={13} 
+                  showControls={true} 
+                />
+              </div>
+
+              {/* Surrounding & Transit Info */}
+              <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+                <div style={{ background: '#f8fafc', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0' }}>
+                  <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <MapPin size={16} color="#0284c7" /> Exact Address
+                  </h4>
+                  <p style={{ color: '#475569', fontSize: '0.88rem', lineHeight: 1.5, margin: 0 }}>
+                    {destination.address || destination.location}
+                  </p>
+                </div>
+
+                <div style={{ background: '#f8fafc', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0' }}>
+                  <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Compass size={16} color="#10b981" /> Coordinates & Region
+                  </h4>
+                  <p style={{ color: '#475569', fontSize: '0.88rem', lineHeight: 1.5, margin: 0 }}>
+                    {destination.latitude?.toFixed(4)}° N, {destination.longitude?.toFixed(4)}° E • {destination.city || destination.state || destination.country}
+                  </p>
+                </div>
+
+                <div style={{ background: '#f8fafc', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0' }}>
+                  <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <ShieldCheck size={16} color="#f59e0b" /> Solo Transit Safety
+                  </h4>
+                  <p style={{ color: '#475569', fontSize: '0.88rem', lineHeight: 1.5, margin: 0 }}>
+                    Verified taxi pickups, bus terminals, and solo-friendly hostel clusters nearby.
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 

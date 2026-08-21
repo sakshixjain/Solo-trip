@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, LayoutGrid, Map as MapIcon } from 'lucide-react';
 import { TripCard } from '../components/TripCard';
+import { GoogleMapView } from '../components/GoogleMapView';
 import type { Destination } from '../services/api';
 import { fetchDestinations, INITIAL_DESTINATIONS } from '../services/api';
 
@@ -16,6 +17,7 @@ export const TripsPage: React.FC = () => {
   const [sortBy, setSortBy] = useState<string>('recommended');
   const [priceMax, setPriceMax] = useState<number>(50000);
   const [visibleCount, setVisibleCount] = useState<number>(6);
+  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
 
   useEffect(() => {
     fetchDestinations().then((data) => {
@@ -58,14 +60,38 @@ export const TripsPage: React.FC = () => {
 
   return (
     <div className="container" style={{ paddingTop: 40, paddingBottom: 80 }}>
-      {/* Page Title Header */}
-      <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#0f172a', marginBottom: 6 }}>
-          Browse Trips
-        </h1>
-        <p style={{ color: '#64748b', fontSize: '1.05rem' }}>
-          Handpicked trips designed specifically for solo travelers
-        </p>
+      {/* Page Title Header with View Mode Toggle */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>
+        <div>
+          <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#0f172a', marginBottom: 6 }}>
+            Browse Trips
+          </h1>
+          <p style={{ color: '#64748b', fontSize: '1.05rem' }}>
+            Handpicked trips designed specifically for solo travelers
+          </p>
+        </div>
+
+        {/* View Toggle: Grid vs Map */}
+        <div className="view-mode-toggle">
+          <button
+            type="button"
+            className={`view-mode-btn ${viewMode === 'grid' ? 'active' : ''}`}
+            onClick={() => setViewMode('grid')}
+            title="Grid View"
+          >
+            <LayoutGrid size={16} />
+            <span>Grid</span>
+          </button>
+          <button
+            type="button"
+            className={`view-mode-btn ${viewMode === 'map' ? 'active' : ''}`}
+            onClick={() => setViewMode('map')}
+            title="Interactive Google Map View"
+          >
+            <MapIcon size={16} />
+            <span>Map View</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
@@ -142,53 +168,76 @@ export const TripsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Trips Grid */}
-      {displayedTrips.length === 0 ? (
-        <div 
-          style={{ 
-            textAlign: 'center', 
-            padding: '60px 20px', 
-            background: '#ffffff', 
-            borderRadius: 16, 
-            border: '1px solid #e2e8f0' 
-          }}
-        >
-          <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: 8 }}>No trips match your filters</h3>
-          <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: 20 }}>
-            Try adjusting your search keyword, category, or maximum budget slider.
-          </p>
-          <button 
-            className="btn btn-primary btn-sm"
-            onClick={() => {
-              setSelectedCategory('All');
-              setSearchTerm('');
-              setPriceMax(50000);
+      {/* Trips Content (Grid or Google Map) */}
+      {viewMode === 'grid' ? (
+        displayedTrips.length === 0 ? (
+          <div 
+            style={{ 
+              textAlign: 'center', 
+              padding: '60px 20px', 
+              background: '#ffffff', 
+              borderRadius: 16, 
+              border: '1px solid #e2e8f0' 
             }}
           >
-            Reset Filters
-          </button>
-        </div>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: 8 }}>No trips match your filters</h3>
+            <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: 20 }}>
+              Try adjusting your search keyword, category, or maximum budget slider.
+            </p>
+            <button 
+              className="btn btn-primary btn-sm"
+              onClick={() => {
+                setSelectedCategory('All');
+                setSearchTerm('');
+                setPriceMax(50000);
+              }}
+            >
+              Reset Filters
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="trips-grid animate-fade-in">
+              {displayedTrips.map((trip) => (
+                <TripCard key={trip.id} trip={trip} />
+              ))}
+            </div>
+
+            {/* Load More Button */}
+            {visibleCount < sortedTrips.length && (
+              <div style={{ textAlign: 'center', marginTop: 48 }}>
+                <button
+                  className="btn btn-primary"
+                  style={{ padding: '12px 32px' }}
+                  onClick={() => setVisibleCount((prev) => prev + 6)}
+                >
+                  Load More Trips ({sortedTrips.length - visibleCount} remaining)
+                </button>
+              </div>
+            )}
+          </>
+        )
       ) : (
-        <>
-          <div className="trips-grid">
-            {displayedTrips.map((trip) => (
-              <TripCard key={trip.id} trip={trip} />
-            ))}
+        <div className="destinations-map-layout animate-fade-in">
+          <div className="map-view-header">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontWeight: 700, color: '#0f172a' }}>
+                Showing {sortedTrips.length} curated trips on Google Maps
+              </span>
+            </div>
+            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+              Click any location marker to view trip duration, pricing, and book your spot
+            </span>
           </div>
 
-          {/* Load More Button */}
-          {visibleCount < sortedTrips.length && (
-            <div style={{ textAlign: 'center', marginTop: 48 }}>
-              <button
-                className="btn btn-primary"
-                style={{ padding: '12px 32px' }}
-                onClick={() => setVisibleCount((prev) => prev + 6)}
-              >
-                Load More Trips ({sortedTrips.length - visibleCount} remaining)
-              </button>
-            </div>
-          )}
-        </>
+          <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 6px 24px rgba(0,0,0,0.06)' }}>
+            <GoogleMapView
+              destinations={sortedTrips}
+              height="560px"
+              showControls={true}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

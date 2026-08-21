@@ -36,10 +36,12 @@ const Place = db.define("Place", {
 
     latitude: {
         type: DataTypes.DOUBLE,
+        allowNull: true,
     },
 
     longitude: {
         type: DataTypes.DOUBLE,
+        allowNull: true,
     },
 
     opening_time: {
@@ -60,4 +62,4 @@ const Place = db.define("Place", {
     }
 });
 
-module.exports = Place;
+module.exports = Place;

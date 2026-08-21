@@ -271,8 +271,8 @@ const updatePlace = async (req, res) => {
         if (city) place.city = city;
         if (state) place.state = state;
 
-        if (latitude) place.latitude = latitude;
-        if (longitude) place.longitude = longitude;
+        if (latitude !== undefined) place.latitude = latitude;
+        if (longitude !== undefined) place.longitude = longitude;
 
         if (opening_time) place.opening_time = opening_time;
         if (closing_time) place.closing_time = closing_time;

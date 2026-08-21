@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Search } from 'lucide-react';
+import { Search, LayoutGrid, Map as MapIcon, MapPin, Compass } from 'lucide-react';
 import { DestinationCard } from '../components/DestinationCard';
+import { GoogleMapView } from '../components/GoogleMapView';
 import type { Destination } from '../services/api';
 import { fetchDestinations, INITIAL_DESTINATIONS } from '../services/api';
 
@@ -8,6 +9,8 @@ export const DestinationsPage: React.FC = () => {
   const [destinations, setDestinations] = useState<Destination[]>(INITIAL_DESTINATIONS);
   const [selectedTag, setSelectedTag] = useState<string>('All');
   const [search, setSearch] = useState<string>('');
+  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
+  const [activeSelectedDest, setActiveSelectedDest] = useState<Destination | null>(null);
 
   useEffect(() => {
     fetchDestinations().then((data) => {
@@ -25,13 +28,38 @@ export const DestinationsPage: React.FC = () => {
 
   return (
     <div className="container" style={{ paddingTop: 40, paddingBottom: 80 }}>
-      <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#0f172a', marginBottom: 6 }}>
-          Popular Destinations
-        </h1>
-        <p style={{ color: '#64748b', fontSize: '1.05rem' }}>
-          Discover iconic towns, tranquil beaches, and Himalayan getaways curated for solo travelers.
-        </p>
+      {/* Header with Title & View Mode Toggle */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>
+        <div>
+          <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#0f172a', marginBottom: 6 }}>
+            Popular Destinations
+          </h1>
+          <p style={{ color: '#64748b', fontSize: '1.05rem' }}>
+            Discover iconic towns, tranquil beaches, and Himalayan getaways curated for solo travelers.
+          </p>
+        </div>
+
+        {/* View Toggle: Grid vs Map */}
+        <div className="view-mode-toggle">
+          <button
+            type="button"
+            className={`view-mode-btn ${viewMode === 'grid' ? 'active' : ''}`}
+            onClick={() => setViewMode('grid')}
+            title="Grid View"
+          >
+            <LayoutGrid size={16} />
+            <span>Grid</span>
+          </button>
+          <button
+            type="button"
+            className={`view-mode-btn ${viewMode === 'map' ? 'active' : ''}`}
+            onClick={() => setViewMode('map')}
+            title="Interactive Google Map View"
+          >
+            <MapIcon size={16} />
+            <span>Map View</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter and Search */}
@@ -60,12 +88,73 @@ export const DestinationsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Grid */}
-      <div className="destinations-grid">
-        {filtered.map((dest) => (
-          <DestinationCard key={dest.id} destination={dest} />
-        ))}
-      </div>
+      {/* Conditional Rendering: Grid or Interactive Google Map */}
+      {viewMode === 'grid' ? (
+        <div className="destinations-grid animate-fade-in">
+          {filtered.map((dest) => (
+            <DestinationCard key={dest.id} destination={dest} />
+          ))}
+        </div>
+      ) : (
+        <div className="destinations-map-layout animate-fade-in">
+          <div className="map-view-header">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Compass size={18} color="#0284c7" />
+              <span style={{ fontWeight: 700, color: '#0f172a' }}>
+                Showing {filtered.length} solo destinations on Google Maps
+              </span>
+            </div>
+            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+              Click any pin to inspect the trip details and get instant directions
+            </span>
+          </div>
+
+          <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 6px 24px rgba(0,0,0,0.06)' }}>
+            <GoogleMapView
+              destinations={filtered}
+              height="540px"
+              showControls={true}
+              onSelectDestination={(dest) => setActiveSelectedDest(dest)}
+            />
+          </div>
+
+          {/* Quick Selection Strip under map */}
+          <div style={{ marginTop: 24 }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: 14, color: '#0f172a' }}>
+              Destinations in this filter ({filtered.length})
+            </h3>
+            <div className="destinations-horizontal-scroll">
+              {filtered.map((dest) => (
+                <div 
+                  key={dest.id} 
+                  className={`dest-scroll-card ${activeSelectedDest?.id === dest.id ? 'active' : ''}`}
+                  onClick={() => setActiveSelectedDest(dest)}
+                >
+                  <img src={dest.image} alt={dest.name} className="dest-scroll-img" />
+                  <div className="dest-scroll-info">
+                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {dest.name}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <MapPin size={12} color="#0284c7" />
+                      {dest.location}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
+                      <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0284c7' }}>
+                        ₹{dest.price.toLocaleString('en-IN')}
+                      </span>
+                      <span style={{ fontSize: '0.78rem', color: '#f59e0b', fontWeight: 700 }}>
+                        ★ {dest.rating.toFixed(1)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+

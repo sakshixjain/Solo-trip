@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+export const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyA7a33q9Hha0sl892c2VTuzFfsB2qTh17k';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -23,6 +24,10 @@ export interface Destination {
   location: string;
   country: string;
   state?: string;
+  city?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
   category: 'Mountains' | 'Beach' | 'Culture' | 'Adventure' | 'Wildlife' | 'Wellness';
   tags: string[];
   rating: number;
@@ -115,7 +120,11 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     name: 'Manali, Himachal Pradesh',
     location: 'Manali, India',
     country: 'India',
+    city: 'Manali',
     state: 'Himachal Pradesh',
+    address: 'Old Manali & Solang Valley, Manali, Himachal Pradesh 175131',
+    latitude: 32.2396,
+    longitude: 77.1887,
     category: 'Mountains',
     tags: ['Mountains', 'Adventure', 'Nature'],
     rating: 4.8,
@@ -192,6 +201,11 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     name: 'Ubud, Bali',
     location: 'Ubud, Indonesia',
     country: 'Indonesia',
+    city: 'Ubud',
+    state: 'Bali',
+    address: 'Jalan Raya Ubud, Gianyar Regency, Bali 80571, Indonesia',
+    latitude: -8.5069,
+    longitude: 115.2625,
     category: 'Culture',
     tags: ['Nature', 'Culture', 'Wellness'],
     rating: 4.7,
@@ -230,7 +244,11 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     name: 'Spiti Valley Road Trip',
     location: 'Spiti, Himachal Pradesh',
     country: 'India',
-    state: 'Himachal',
+    city: 'Kaza',
+    state: 'Himachal Pradesh',
+    address: 'Kaza & Chandratal Lake, Spiti Valley, Himachal Pradesh 172114',
+    latitude: 32.2461,
+    longitude: 78.0349,
     category: 'Adventure',
     tags: ['Adventure', 'Mountains', 'Road Trip'],
     rating: 4.9,
@@ -269,7 +287,11 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     name: 'Kasol & Tosh, Parvati Valley',
     location: 'Kasol, India',
     country: 'India',
-    state: 'Himachal',
+    city: 'Kasol',
+    state: 'Himachal Pradesh',
+    address: 'Parvati Valley, Kullu District, Himachal Pradesh 175105',
+    latitude: 32.0100,
+    longitude: 77.3150,
     category: 'Mountains',
     tags: ['Trekking', 'Riverside', 'Cafe Culture'],
     rating: 4.6,
@@ -303,6 +325,11 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     name: 'Kyoto, Japan',
     location: 'Kyoto, Japan',
     country: 'Japan',
+    city: 'Kyoto',
+    state: 'Kansai',
+    address: 'Gion & Arashiyama, Kyoto, Kyoto Prefecture, Japan',
+    latitude: 35.0116,
+    longitude: 135.7681,
     category: 'Culture',
     tags: ['Culture', 'Temples', 'Heritage'],
     rating: 4.9,
@@ -338,7 +365,11 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     name: 'Goa Beach Escape',
     location: 'Goa, India',
     country: 'India',
+    city: 'North & South Goa',
     state: 'Goa',
+    address: 'Anjuna & Palolem Beach, Goa 403509, India',
+    latitude: 15.2993,
+    longitude: 74.1240,
     category: 'Beach',
     tags: ['Beaches', 'Party', 'Watersports'],
     rating: 4.5,
@@ -374,7 +405,11 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     name: 'Trek to Triund',
     location: 'Dharamshala, Himachal Pradesh',
     country: 'India',
-    state: 'Himachal',
+    city: 'Dharamshala',
+    state: 'Himachal Pradesh',
+    address: 'Triund Ridge, McLeod Ganj, Dharamshala, Himachal Pradesh 176219',
+    latitude: 32.2570,
+    longitude: 76.3533,
     category: 'Adventure',
     tags: ['Adventure', 'Mountains', 'Camping'],
     rating: 4.8,
@@ -409,7 +444,11 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     name: 'Rishikesh Adventure',
     location: 'Rishikesh, Uttarakhand',
     country: 'India',
+    city: 'Rishikesh',
     state: 'Uttarakhand',
+    address: 'Tapovan & Shivpuri, Rishikesh, Uttarakhand 249192, India',
+    latitude: 30.0869,
+    longitude: 78.2676,
     category: 'Adventure',
     tags: ['Adventure', 'Rafting', 'Yoga'],
     rating: 4.5,
@@ -443,7 +482,11 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     name: 'Jaipur Cultural Tour',
     location: 'Jaipur, Rajasthan',
     country: 'India',
+    city: 'Jaipur',
     state: 'Rajasthan',
+    address: 'Amer & Hawa Mahal, Jaipur, Rajasthan 302002, India',
+    latitude: 26.9124,
+    longitude: 75.7873,
     category: 'Culture',
     tags: ['Culture', 'Heritage', 'Palaces'],
     rating: 4.7,
@@ -610,6 +653,11 @@ export const fetchDestinations = async (): Promise<Destination[]> => {
         name: p.place_name || p.name,
         location: `${p.city || ''}, ${p.state || ''}`,
         country: 'India',
+        city: p.city || '',
+        state: p.state || '',
+        address: p.address || `${p.place_name || ''}, ${p.city || ''}, ${p.state || ''}`,
+        latitude: p.latitude != null ? Number(p.latitude) : undefined,
+        longitude: p.longitude != null ? Number(p.longitude) : undefined,
         category: p.Category?.category_name || 'Adventure',
         tags: [p.Category?.category_name || 'Adventure', 'Nature'],
         rating: 4.8,
