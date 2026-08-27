@@ -14,7 +14,13 @@ import {
   ShieldCheck,
   MapPin,
   Navigation,
-  ExternalLink
+  ExternalLink,
+  Car,
+  Train,
+  Plane,
+  Footprints,
+  Crosshair,
+  Clock
 } from 'lucide-react';
 import { BookingModal } from '../components/BookingModal';
 import { GoogleMapView } from '../components/GoogleMapView';
@@ -22,6 +28,13 @@ import type { Destination } from '../services/api';
 import { fetchDestinationById, INITIAL_DESTINATIONS } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
+import { 
+  getTravelEstimates, 
+  getCurrentUserLocation, 
+  POPULAR_ORIGIN_CITIES, 
+  getDirectionsUrl,
+  type GeoPoint
+} from '../utils/geoUtils';
 
 export const TripDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +48,10 @@ export const TripDetailPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'itinerary' | 'map' | 'inclusions' | 'reviews' | 'gallery'>('overview');
   const [isBookingOpen, setIsBookingOpen] = useState<boolean>(false);
   const [selectedPhoto, setSelectedPhoto] = useState<string>(destination.image);
+
+  // User location and duration state
+  const [userLocation, setUserLocation] = useState<GeoPoint | null>(null);
+  const [isLocating, setIsLocating] = useState<boolean>(false);
 
   // Reviews form state
   const [reviewsList, setReviewsList] = useState(destination.reviews || []);
@@ -82,6 +99,23 @@ export const TripDetailPage: React.FC = () => {
     setNewReviewText('');
     showToast('Thank you for submitting your verified review!', 'success');
   };
+
+  const handleDetectMyLocation = async () => {
+    setIsLocating(true);
+    try {
+      const loc = await getCurrentUserLocation();
+      setUserLocation(loc);
+      showToast('📍 Live GPS location detected!', 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Could not fetch your location.', 'error');
+    } finally {
+      setIsLocating(false);
+    }
+  };
+
+  const travelEstimates = (userLocation && destination.latitude != null && destination.longitude != null)
+    ? getTravelEstimates(userLocation.latitude, userLocation.longitude, destination.latitude, destination.longitude)
+    : null;
 
   return (
     <div className="container" style={{ paddingTop: 32, paddingBottom: 80 }}>
@@ -265,9 +299,10 @@ export const TripDetailPage: React.FC = () => {
                 <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.04)' }}>
                   <GoogleMapView 
                     destination={destination} 
-                    height="280px" 
+                    initialUserLocation={userLocation || undefined}
+                    height="320px" 
                     zoom={13} 
-                    showControls={false} 
+                    showControls={true} 
                   />
                 </div>
               </div>
@@ -283,31 +318,153 @@ export const TripDetailPage: React.FC = () => {
                     Explore {destination.name} on Map
                   </h3>
                   <p style={{ color: '#64748b', fontSize: '0.9rem', margin: '4px 0 0' }}>
-                    Interactive Google Map with satellite, terrain layers, and live GPS coordinates
+                    Interactive Google Map with user location, directions route & real-time travel duration
                   </p>
                 </div>
 
-                {destination.latitude != null && (
-                  <a
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${destination.latitude},${destination.longitude}&destination_place_id=${encodeURIComponent(destination.name)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-primary btn-sm"
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={handleDetectMyLocation}
+                    disabled={isLocating}
+                    className="btn btn-outline btn-sm"
                     style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
                   >
-                    <Navigation size={14} /> Open Navigation in Google Maps <ExternalLink size={12} />
-                  </a>
-                )}
+                    <Crosshair size={14} className={isLocating ? 'animate-spin-slow' : ''} />
+                    <span>{isLocating ? 'Locating...' : userLocation ? '📍 GPS Updated' : 'Detect My Location'}</span>
+                  </button>
+
+                  {destination.latitude != null && (
+                    <a
+                      href={getDirectionsUrl(
+                        userLocation?.latitude || 28.6139,
+                        userLocation?.longitude || 77.2090,
+                        destination.latitude,
+                        destination.longitude ?? 77.1887,
+                        destination.name
+                      )}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-primary btn-sm"
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                    >
+                      <Navigation size={14} /> Open Live GPS Navigation <ExternalLink size={12} />
+                    </a>
+                  )}
+                </div>
               </div>
 
               {/* Main Interactive Google Map Component */}
               <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
                 <GoogleMapView 
                   destination={destination} 
-                  height="460px" 
+                  initialUserLocation={userLocation || undefined}
+                  height="480px" 
                   zoom={13} 
                   showControls={true} 
                 />
+              </div>
+
+              {/* Live Travel Duration Calculator Card */}
+              <div className="travel-duration-panel">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}>
+                  <div>
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Clock size={18} color="#0284c7" />
+                      <span>Travel Duration & Distance Calculator</span>
+                    </h4>
+                    <p style={{ fontSize: '0.86rem', color: '#64748b', margin: '4px 0 0' }}>
+                      {userLocation ? (
+                        <span>Calculated from: <strong>{userLocation.name}</strong> to <strong>{destination.name}</strong></span>
+                      ) : (
+                        <span>Choose your starting city or click "Detect My Location" to see exact travel times</span>
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Origin City Pills */}
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {POPULAR_ORIGIN_CITIES.slice(0, 5).map((city) => (
+                      <button
+                        key={city.name}
+                        type="button"
+                        onClick={() => {
+                          setUserLocation(city);
+                          showToast(`📍 Set origin to ${city.name}`, 'info');
+                        }}
+                        className={`btn btn-sm ${userLocation?.name === city.name ? 'btn-primary' : 'btn-outline'}`}
+                        style={{ fontSize: '0.78rem', padding: '4px 10px' }}
+                      >
+                        {city.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Duration Mode Cards Grid */}
+                {travelEstimates && (
+                  <div className="duration-estimates-grid">
+                    {/* Driving / Car Card */}
+                    <div className="duration-mode-card">
+                      <div className="duration-mode-header">
+                        <div className="duration-icon-box blue">
+                          <Car size={20} />
+                        </div>
+                        <div>
+                          <div className="duration-mode-title">By Road / Car / Cab</div>
+                          <div className="duration-mode-subtitle">{travelEstimates.DRIVING.distanceText}</div>
+                        </div>
+                      </div>
+                      <div className="duration-val-big">{travelEstimates.DRIVING.durationText}</div>
+                      <p className="duration-mode-hint">Direct highway route with scenic mountain roads & pitstops</p>
+                    </div>
+
+                    {/* Train / Transit Card */}
+                    <div className="duration-mode-card">
+                      <div className="duration-mode-header">
+                        <div className="duration-icon-box emerald">
+                          <Train size={20} />
+                        </div>
+                        <div>
+                          <div className="duration-mode-title">By Train / Transit</div>
+                          <div className="duration-mode-subtitle">{travelEstimates.TRANSIT.distanceText}</div>
+                        </div>
+                      </div>
+                      <div className="duration-val-big">{travelEstimates.TRANSIT.durationText}</div>
+                      <p className="duration-mode-hint">Budget-friendly sleeper & express train connections</p>
+                    </div>
+
+                    {/* Flight Card */}
+                    <div className="duration-mode-card">
+                      <div className="duration-mode-header">
+                        <div className="duration-icon-box purple">
+                          <Plane size={20} />
+                        </div>
+                        <div>
+                          <div className="duration-mode-title">By Flight + Cab</div>
+                          <div className="duration-mode-subtitle">{travelEstimates.FLYING.distanceText} (Air)</div>
+                        </div>
+                      </div>
+                      <div className="duration-val-big">{travelEstimates.FLYING.durationText}</div>
+                      <p className="duration-mode-hint">Fastest travel via nearest domestic airport</p>
+                    </div>
+
+                    {/* Walking / Trek Card */}
+                    <div className="duration-mode-card">
+                      <div className="duration-mode-header">
+                        <div className="duration-icon-box orange">
+                          <Footprints size={20} />
+                        </div>
+                        <div>
+                          <div className="duration-mode-title">Trek / Local Walk</div>
+                          <div className="duration-mode-subtitle">{travelEstimates.WALKING.distanceText}</div>
+                        </div>
+                      </div>
+                      <div className="duration-val-big">{travelEstimates.WALKING.durationText}</div>
+                      <p className="duration-mode-hint">Local trails and exploration around the area</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Surrounding & Transit Info */}

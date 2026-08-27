@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF, DirectionsRenderer } from '@react-google-maps/api';
 import { 
   MapPin, 
   Navigation, 
@@ -10,10 +10,24 @@ import {
   Check, 
   Star, 
   Maximize2,
-  AlertCircle
+  Car,
+  Train,
+  Footprints,
+  Plane,
+  Crosshair,
+  Route,
+  ChevronDown
 } from 'lucide-react';
 import { GOOGLE_MAPS_API_KEY, type Destination } from '../services/api';
 import { Link } from 'react-router-dom';
+import { 
+  getTravelEstimates, 
+  getCurrentUserLocation, 
+  POPULAR_ORIGIN_CITIES, 
+  getDirectionsUrl,
+  type GeoPoint,
+  type TravelEstimate
+} from '../utils/geoUtils';
 
 const libraries: ('places' | 'geometry')[] = ['places', 'geometry'];
 
@@ -49,23 +63,50 @@ const mapStyles = [
 export interface GoogleMapViewProps {
   destination?: Destination;
   destinations?: Destination[];
+  initialUserLocation?: GeoPoint;
   height?: string | number;
   zoom?: number;
   showControls?: boolean;
+  showRouteEstimates?: boolean;
   className?: string;
   onSelectDestination?: (dest: Destination) => void;
+  onDurationCalculated?: (estimates: Record<'DRIVING' | 'TRANSIT' | 'WALKING' | 'FLYING', TravelEstimate>) => void;
 }
 
 export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
   destination,
   destinations,
-  height = '440px',
+  initialUserLocation,
+  height = '460px',
   zoom = 12,
   showControls = true,
+  showRouteEstimates = true,
   className = '',
-  onSelectDestination
+  onSelectDestination,
+  onDurationCalculated
 }) => {
   const apiKey = GOOGLE_MAPS_API_KEY;
+
+  const [authError, setAuthError] = useState(false);
+
+  // Catch Google Maps authorization errors (RefererNotAllowedMapError, ApiNotActivatedMapError, etc.)
+  useEffect(() => {
+    const previousAuthFailure = (window as any).gm_authFailure;
+    (window as any).gm_authFailure = () => {
+      console.warn("Google Maps Auth Error detected (e.g. RefererNotAllowedMapError). Switching to fallback map view.");
+      setAuthError(true);
+      if (typeof previousAuthFailure === 'function') {
+        try {
+          previousAuthFailure();
+        } catch {
+          // ignore
+        }
+      }
+    };
+    return () => {
+      (window as any).gm_authFailure = previousAuthFailure;
+    };
+  }, []);
 
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -80,6 +121,16 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // User Location State
+  const [userLocation, setUserLocation] = useState<GeoPoint | null>(initialUserLocation || null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [selectedCityPickerOpen, setSelectedCityPickerOpen] = useState(false);
+  const [showUserPinInfo, setShowUserPinInfo] = useState(false);
+
+  // Route & Travel Mode State
+  const [travelMode, setTravelMode] = useState<'DRIVING' | 'TRANSIT' | 'WALKING' | 'FLYING'>('DRIVING');
+  const [directionsResult, setDirectionsResult] = useState<any>(null);
+
   // Compute active coordinates
   const activeDestinations = useMemo(() => {
     if (destinations && destinations.length > 0) {
@@ -91,49 +142,134 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
     return [];
   }, [destinations, destination]);
 
+  const primaryDest = selectedPin || destination || activeDestinations[0];
+
+  // Calculate Duration and Distance Estimates
+  const travelEstimates = useMemo(() => {
+    if (!userLocation || !primaryDest || primaryDest.latitude == null || primaryDest.longitude == null) {
+      return null;
+    }
+    const estimates = getTravelEstimates(
+      userLocation.latitude,
+      userLocation.longitude,
+      primaryDest.latitude,
+      primaryDest.longitude
+    );
+    if (onDurationCalculated) {
+      onDurationCalculated(estimates);
+    }
+    return estimates;
+  }, [userLocation, primaryDest, onDurationCalculated]);
+
+  const activeEstimate = travelEstimates ? travelEstimates[travelMode] : null;
+
+  // Handler to request User's Current Location via GPS
+  const handleDetectLocation = async () => {
+    setIsLocating(true);
+    try {
+      const loc = await getCurrentUserLocation();
+      setUserLocation(loc);
+      if (map) {
+        map.panTo({ lat: loc.latitude, lng: loc.longitude });
+        map.setZoom(10);
+      }
+    } catch {
+      // Fallback
+    } finally {
+      setIsLocating(false);
+    }
+  };
+
+  // Set Manual Origin City
+  const handleSelectCity = (city: GeoPoint) => {
+    setUserLocation(city);
+    setSelectedCityPickerOpen(false);
+    if (map) {
+      map.panTo({ lat: city.latitude, lng: city.longitude });
+    }
+  };
+
+  // Google Maps DirectionsService Request
+  useEffect(() => {
+    if (!isLoaded || !map || !userLocation || !primaryDest || primaryDest.latitude == null || primaryDest.longitude == null) {
+      setDirectionsResult(null);
+      return;
+    }
+
+    if (!window.google?.maps?.DirectionsService) return;
+
+    if (travelMode === 'FLYING') {
+      setDirectionsResult(null);
+      return;
+    }
+
+    const directionsService = new window.google.maps.DirectionsService();
+
+    const googleMode = 
+      travelMode === 'TRANSIT' 
+        ? window.google.maps.TravelMode.TRANSIT 
+        : travelMode === 'WALKING' 
+        ? window.google.maps.TravelMode.WALKING 
+        : window.google.maps.TravelMode.DRIVING;
+
+    directionsService.route(
+      {
+        origin: { lat: userLocation.latitude, lng: userLocation.longitude },
+        destination: { lat: primaryDest.latitude, lng: primaryDest.longitude },
+        travelMode: googleMode
+      },
+      (result, status) => {
+        if (status === window.google.maps.DirectionsStatus.OK && result) {
+          setDirectionsResult(result);
+        } else {
+          setDirectionsResult(null);
+        }
+      }
+    );
+  }, [isLoaded, map, userLocation, primaryDest, travelMode]);
+
+  // Adjust map viewport to fit both user location and destinations
+  useEffect(() => {
+    if (!map || !window.google?.maps?.LatLngBounds) return;
+
+    const bounds = new window.google.maps.LatLngBounds();
+    let count = 0;
+
+    if (userLocation) {
+      bounds.extend({ lat: userLocation.latitude, lng: userLocation.longitude });
+      count++;
+    }
+
+    if (primaryDest && primaryDest.latitude != null && primaryDest.longitude != null) {
+      bounds.extend({ lat: primaryDest.latitude, lng: primaryDest.longitude });
+      count++;
+    }
+
+    if (count >= 2) {
+      map.fitBounds(bounds, { top: 60, right: 60, bottom: 90, left: 60 });
+    }
+  }, [map, userLocation, primaryDest]);
+
   const defaultCenter = useMemo(() => {
-    if (destination && destination.latitude != null && destination.longitude != null) {
-      return { lat: destination.latitude, lng: destination.longitude };
+    if (userLocation) {
+      return { lat: userLocation.latitude, lng: userLocation.longitude };
+    }
+    if (primaryDest && primaryDest.latitude != null && primaryDest.longitude != null) {
+      return { lat: primaryDest.latitude, lng: primaryDest.longitude };
     }
     if (activeDestinations.length > 0) {
       return { lat: activeDestinations[0].latitude!, lng: activeDestinations[0].longitude! };
     }
-    // Fallback to India center
     return { lat: 20.5937, lng: 78.9629 };
-  }, [destination, activeDestinations]);
+  }, [userLocation, primaryDest, activeDestinations]);
 
   const onLoad = useCallback((mapInstance: any) => {
     setMap(mapInstance);
-    if (activeDestinations.length > 1 && window.google?.maps?.LatLngBounds) {
-      const bounds = new window.google.maps.LatLngBounds();
-      activeDestinations.forEach((d) => {
-        if (d.latitude != null && d.longitude != null) {
-          bounds.extend({ lat: d.latitude, lng: d.longitude });
-        }
-      });
-      mapInstance.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
-    }
-  }, [activeDestinations]);
+  }, []);
 
   const onUnmount = useCallback(() => {
     setMap(null);
   }, []);
-
-  // Update bounds when destinations list change
-  useEffect(() => {
-    if (map && activeDestinations.length > 1 && window.google?.maps?.LatLngBounds) {
-      const bounds = new window.google.maps.LatLngBounds();
-      activeDestinations.forEach((d) => {
-        if (d.latitude != null && d.longitude != null) {
-          bounds.extend({ lat: d.latitude, lng: d.longitude });
-        }
-      });
-      map.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
-    } else if (map && destination && destination.latitude != null && destination.longitude != null) {
-      map.panTo({ lat: destination.latitude, lng: destination.longitude });
-      map.setZoom(zoom);
-    }
-  }, [map, activeDestinations, destination, zoom]);
 
   const handleCopyCoords = (lat: number, lng: number) => {
     if (navigator.clipboard) {
@@ -152,10 +288,6 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
     }
   };
 
-  const getDirectionsUrl = (lat: number, lng: number, placeName?: string) => {
-    return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_id=${encodeURIComponent(placeName || '')}`;
-  };
-
   const mapOptions = useMemo(() => ({
     disableDefaultUI: false,
     zoomControl: true,
@@ -168,7 +300,7 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
   }), []);
 
   // Handle Loading State
-  if (!isLoaded) {
+  if (!isLoaded && !authError && !loadError) {
     return (
       <div 
         className={`google-map-loader-container ${className}`} 
@@ -178,67 +310,147 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
           <div className="map-loader-spinner" />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0f172a', fontWeight: 600 }}>
             <Compass className="animate-spin-slow" size={20} color="#0284c7" />
-            <span>Loading Google Maps...</span>
+            <span>Loading Google Maps & Routes...</span>
           </div>
           <p style={{ color: '#64748b', fontSize: '0.85rem', margin: 0 }}>
-            Fetching high-precision satellite & terrain coordinates
+            Fetching high-precision satellite, user GPS & duration estimates
           </p>
         </div>
       </div>
     );
   }
 
-  // Handle Load Error or Fallback
-  if (loadError) {
-    const lat = destination?.latitude || 32.2396;
-    const lng = destination?.longitude || 77.1887;
-    const name = destination?.name || 'Destination Location';
-    const address = destination?.address || destination?.location || 'India';
+  // Handle Fallback Mode (e.g. if API Key is unauthorized or offline)
+  if (loadError || authError) {
+    const lat = primaryDest?.latitude || 32.2396;
+    const lng = primaryDest?.longitude || 77.1887;
+    const name = primaryDest?.name || 'Destination Location';
+
+    const originLat = userLocation?.latitude || 28.6139;
+    const originLng = userLocation?.longitude || 77.2090;
+
+    const iframeSrc = userLocation
+      ? `https://maps.google.com/maps?saddr=${originLat},${originLng}&daddr=${lat},${lng}&hl=en&output=embed`
+      : `https://maps.google.com/maps?q=${lat},${lng}&hl=en&z=${zoom}&output=embed`;
 
     return (
       <div 
         className={`google-map-fallback-container ${className}`} 
-        style={{ height }}
+        style={{ height, position: 'relative', overflow: 'hidden', borderRadius: 16 }}
       >
-        <div className="map-fallback-overlay">
-          <div className="fallback-badge">
-            <AlertCircle size={16} color="#d97706" />
-            <span>Interactive Location View</span>
-          </div>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, margin: '8px 0 4px', color: '#0f172a' }}>{name}</h3>
-          <p style={{ color: '#475569', fontSize: '0.9rem', marginBottom: 12 }}>
-            <MapPin size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4, color: '#0284c7' }} />
-            {address}
-          </p>
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <a 
-              href={getDirectionsUrl(lat, lng, name)}
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="btn btn-primary btn-sm"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+        {/* Floating Top Bar with GPS Locate */}
+        <div style={{ position: 'absolute', top: 12, left: 12, right: 12, zIndex: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, pointerEvents: 'none' }}>
+          <div style={{ pointerEvents: 'auto', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={handleDetectLocation}
+              disabled={isLocating}
+              className="map-action-pill"
+              style={{ background: userLocation ? '#0284c7' : '#ffffff', color: userLocation ? '#ffffff' : '#0f172a', fontWeight: 700 }}
             >
-              <Navigation size={14} /> Open in Google Maps
-            </a>
-            <button 
-              onClick={() => handleCopyCoords(lat, lng)}
-              className="btn btn-outline btn-sm"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-            >
-              {copied ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
-              {copied ? 'Copied Coordinates' : `${lat.toFixed(4)}, ${lng.toFixed(4)}`}
+              <Crosshair size={14} className={isLocating ? 'animate-spin-slow' : ''} />
+              <span>{isLocating ? 'Detecting GPS...' : userLocation ? '📍 GPS Active' : '📍 Use My Location'}</span>
             </button>
+
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedCityPickerOpen(!selectedCityPickerOpen)}
+                className="map-action-pill"
+              >
+                <span>{userLocation ? userLocation.name : 'Choose Starting City'}</span>
+                <ChevronDown size={13} />
+              </button>
+
+              {selectedCityPickerOpen && (
+                <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: 6, background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '8px', boxShadow: '0 10px 25px rgba(0,0,0,0.15)', minWidth: 180, maxHeight: 220, overflowY: 'auto', zIndex: 30 }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', padding: '4px 8px', textTransform: 'uppercase' }}>Select Origin</div>
+                  {POPULAR_ORIGIN_CITIES.map((city) => (
+                    <button
+                      key={city.name}
+                      type="button"
+                      onClick={() => handleSelectCity(city)}
+                      style={{ width: '100%', textAlign: 'left', padding: '6px 10px', fontSize: '0.82rem', border: 'none', background: 'none', cursor: 'pointer', borderRadius: 6, color: '#1e293b' }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = '#f1f5f9')}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                    >
+                      📍 {city.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
+        {/* Live Route & Duration Floating Card */}
+        {showRouteEstimates && travelEstimates && (
+          <div style={{ position: 'absolute', bottom: 12, left: 12, right: 12, zIndex: 12, background: 'rgba(255, 255, 255, 0.96)', backdropFilter: 'blur(12px)', borderRadius: 14, padding: '14px 18px', border: '1px solid #e2e8f0', boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
+                  <Route size={14} color="#0284c7" />
+                  <span>{userLocation?.name || 'Your Location'} &rarr; {name}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 4 }}>
+                  <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>
+                    {activeEstimate?.durationText}
+                  </span>
+                  <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 600 }}>
+                    ({activeEstimate?.distanceText} away)
+                  </span>
+                </div>
+              </div>
+
+              {/* Mode Selectors */}
+              <div style={{ display: 'flex', gap: 4, background: '#f1f5f9', padding: 3, borderRadius: 10 }}>
+                <button
+                  type="button"
+                  onClick={() => setTravelMode('DRIVING')}
+                  className={`btn btn-sm ${travelMode === 'DRIVING' ? 'btn-primary' : 'btn-outline'}`}
+                  style={{ padding: '5px 10px', fontSize: '0.78rem' }}
+                >
+                  <Car size={13} /> Drive
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTravelMode('TRANSIT')}
+                  className={`btn btn-sm ${travelMode === 'TRANSIT' ? 'btn-primary' : 'btn-outline'}`}
+                  style={{ padding: '5px 10px', fontSize: '0.78rem' }}
+                >
+                  <Train size={13} /> Train
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTravelMode('FLYING')}
+                  className={`btn btn-sm ${travelMode === 'FLYING' ? 'btn-primary' : 'btn-outline'}`}
+                  style={{ padding: '5px 10px', fontSize: '0.78rem' }}
+                >
+                  <Plane size={13} /> Flight
+                </button>
+              </div>
+
+              <a
+                href={getDirectionsUrl(originLat, originLng, lat, lng, name, travelMode === 'TRANSIT' ? 'transit' : travelMode === 'WALKING' ? 'walking' : 'driving')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary btn-sm"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              >
+                <Navigation size={14} /> Start Live GPS Navigation
+              </a>
+            </div>
+          </div>
+        )}
+
         {/* Embedded Iframe Preview */}
         <iframe
-          title="Map Location Fallback"
+          title="Map Route Fallback"
           width="100%"
           height="100%"
-          style={{ border: 0, filter: 'saturate(1.1)' }}
+          style={{ border: 0, filter: 'saturate(1.1)', width: '100%', height: '100%' }}
           loading="lazy"
-          src={`https://maps.google.com/maps?q=${lat},${lng}&hl=en&z=${zoom}&output=embed`}
+          src={iframeSrc}
         />
       </div>
     );
@@ -250,8 +462,6 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
     borderRadius: '16px'
   };
 
-  const primaryDest = destination || activeDestinations[0];
-
   return (
     <div 
       ref={containerRef}
@@ -261,6 +471,7 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
       {/* Top Floating Control Bar */}
       {showControls && (
         <div className="map-floating-bar">
+          {/* Map Layer Toggles */}
           <div className="map-type-toggles">
             <button
               type="button"
@@ -294,7 +505,55 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
             </button>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* User Location Actions */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <button
+              type="button"
+              onClick={handleDetectLocation}
+              disabled={isLocating}
+              className="map-action-pill"
+              style={{
+                background: userLocation ? '#0284c7' : 'rgba(255, 255, 255, 0.95)',
+                color: userLocation ? '#ffffff' : '#0f172a',
+                fontWeight: 600
+              }}
+              title="Detect your live GPS location"
+            >
+              <Crosshair size={14} className={isLocating ? 'animate-spin-slow' : ''} />
+              <span>{isLocating ? 'Locating...' : userLocation ? '📍 GPS On' : 'Detect My Location'}</span>
+            </button>
+
+            {/* City Selector Dropdown */}
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedCityPickerOpen(!selectedCityPickerOpen)}
+                className="map-action-pill"
+                title="Choose origin city"
+              >
+                <span>{userLocation?.name || 'Starting City'}</span>
+                <ChevronDown size={12} />
+              </button>
+
+              {selectedCityPickerOpen && (
+                <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 6, background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '8px', boxShadow: '0 10px 25px rgba(0,0,0,0.15)', minWidth: 180, maxHeight: 220, overflowY: 'auto', zIndex: 30 }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', padding: '4px 8px', textTransform: 'uppercase' }}>Select Origin City</div>
+                  {POPULAR_ORIGIN_CITIES.map((city) => (
+                    <button
+                      key={city.name}
+                      type="button"
+                      onClick={() => handleSelectCity(city)}
+                      style={{ width: '100%', textAlign: 'left', padding: '6px 10px', fontSize: '0.82rem', border: 'none', background: 'none', cursor: 'pointer', borderRadius: 6, color: '#1e293b' }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = '#f1f5f9')}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                    >
+                      📍 {city.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {primaryDest && primaryDest.latitude != null && (
               <button
                 type="button"
@@ -323,13 +582,59 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={defaultCenter}
-        zoom={activeDestinations.length > 1 ? 5 : zoom}
+        zoom={userLocation && primaryDest ? 7 : activeDestinations.length > 1 ? 5 : zoom}
         onLoad={onLoad}
         onUnmount={onUnmount}
         options={mapOptions}
       >
-        {/* Render Markers for Destinations */}
-        {activeDestinations.map((dest) => {
+        {/* User Location Marker */}
+        {userLocation && (
+          <MarkerF
+            position={{ lat: userLocation.latitude, lng: userLocation.longitude }}
+            title="Your Current Location"
+            icon={{
+              url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+              scaledSize: window.google?.maps?.Size ? new window.google.maps.Size(42, 42) : undefined
+            }}
+            onClick={() => setShowUserPinInfo(true)}
+          />
+        )}
+
+        {/* User Location Info Window */}
+        {userLocation && showUserPinInfo && (
+          <InfoWindowF
+            position={{ lat: userLocation.latitude, lng: userLocation.longitude }}
+            onCloseClick={() => setShowUserPinInfo(false)}
+          >
+            <div style={{ padding: 6, color: '#0f172a' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, fontSize: '0.9rem' }}>
+                <Crosshair size={14} color="#0284c7" />
+                <span>{userLocation.name || 'Your Location'}</span>
+              </div>
+              <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: '#64748b' }}>
+                {userLocation.latitude.toFixed(4)}° N, {userLocation.longitude.toFixed(4)}° E
+              </p>
+            </div>
+          </InfoWindowF>
+        )}
+
+        {/* Google Maps Directions Renderer (Route Line) */}
+        {directionsResult && (
+          <DirectionsRenderer
+            directions={directionsResult}
+            options={{
+              suppressMarkers: false,
+              polylineOptions: {
+                strokeColor: '#0284c7',
+                strokeWeight: 5,
+                strokeOpacity: 0.85
+              }
+            }}
+          />
+        )}
+
+        {/* Render Markers for Destinations (when directions line is not suppressing them) */}
+        {!directionsResult && activeDestinations.map((dest) => {
           if (dest.latitude == null || dest.longitude == null) return null;
           const isSelected = selectedPin?.id === dest.id;
 
@@ -348,7 +653,7 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
         })}
 
         {/* Info Window for Selected Pin */}
-        {selectedPin && selectedPin.latitude != null && selectedPin.longitude != null && (
+        {selectedPin && selectedPin.latitude != null && selectedPin.longitude != null && !directionsResult && (
           <InfoWindowF
             position={{ lat: selectedPin.latitude, lng: selectedPin.longitude }}
             onCloseClick={() => setSelectedPin(null)}
@@ -390,7 +695,13 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
                     View Trip Details
                   </Link>
                   <a
-                    href={getDirectionsUrl(selectedPin.latitude, selectedPin.longitude, selectedPin.name)}
+                    href={getDirectionsUrl(
+                      userLocation?.latitude || selectedPin.latitude,
+                      userLocation?.longitude || (selectedPin.longitude ?? 77.1887),
+                      selectedPin.latitude,
+                      selectedPin.longitude ?? 77.1887,
+                      selectedPin.name
+                    )}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="infowindow-btn infowindow-btn-outline"
@@ -405,8 +716,94 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
         )}
       </GoogleMap>
 
-      {/* Bottom Quick Info Bar for Single Destination */}
-      {destination && destination.latitude != null && (
+      {/* Floating Travel Duration & Live Route Overview Card */}
+      {showRouteEstimates && userLocation && primaryDest && primaryDest.latitude != null && (
+        <div className="map-route-duration-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#475569', fontWeight: 700 }}>
+              <Route size={15} color="#0284c7" />
+              <span>Route ETA & Duration</span>
+            </div>
+
+            {/* Travel Mode Toggle Pills */}
+            <div className="map-travel-mode-pills">
+              <button
+                type="button"
+                onClick={() => setTravelMode('DRIVING')}
+                className={`map-mode-pill ${travelMode === 'DRIVING' ? 'active' : ''}`}
+                title="Driving by Car / Bike"
+              >
+                <Car size={13} />
+                <span>Car</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setTravelMode('TRANSIT')}
+                className={`map-mode-pill ${travelMode === 'TRANSIT' ? 'active' : ''}`}
+                title="Train / Transit"
+              >
+                <Train size={13} />
+                <span>Train</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setTravelMode('FLYING')}
+                className={`map-mode-pill ${travelMode === 'FLYING' ? 'active' : ''}`}
+                title="Flight + Transfer"
+              >
+                <Plane size={13} />
+                <span>Flight</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setTravelMode('WALKING')}
+                className={`map-mode-pill ${travelMode === 'WALKING' ? 'active' : ''}`}
+                title="Walking / Trekking"
+              >
+                <Footprints size={13} />
+              </button>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                <span className="route-duration-highlight">
+                  {activeEstimate?.durationText || 'Calculating...'}
+                </span>
+                <span className="route-distance-highlight">
+                  • {activeEstimate?.distanceText} away
+                </span>
+              </div>
+              <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '2px 0 0' }}>
+                From <strong>{userLocation.name || 'Your Location'}</strong> to <strong>{primaryDest.name}</strong>
+              </p>
+            </div>
+
+            <a
+              href={getDirectionsUrl(
+                userLocation.latitude,
+                userLocation.longitude,
+                primaryDest.latitude,
+                primaryDest.longitude ?? 77.1887,
+                primaryDest.name,
+                travelMode === 'TRANSIT' ? 'transit' : travelMode === 'WALKING' ? 'walking' : 'driving'
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary btn-sm"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', fontSize: '0.82rem' }}
+            >
+              <Navigation size={13} />
+              <span>Open in Google Maps</span>
+              <ExternalLink size={12} />
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* Bottom Quick Info Bar for Single Destination (when no user location selected) */}
+      {!userLocation && destination && destination.latitude != null && (
         <div className="map-bottom-bar">
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
             <div className="map-pin-icon-wrap">
@@ -423,8 +820,18 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
           </div>
 
           <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+            <button
+              type="button"
+              onClick={handleDetectLocation}
+              className="btn btn-outline btn-sm"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', fontSize: '0.82rem' }}
+            >
+              <Crosshair size={13} />
+              <span>Calculate Duration From Me</span>
+            </button>
+
             <a
-              href={getDirectionsUrl(destination.latitude, destination.longitude!, destination.name)}
+              href={`https://www.google.com/maps/dir/?api=1&destination=${destination.latitude},${destination.longitude}&destination_place_id=${encodeURIComponent(destination.name)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary btn-sm"
@@ -432,7 +839,6 @@ export const GoogleMapView: React.FC<GoogleMapViewProps> = ({
             >
               <Navigation size={13} />
               <span>Get Directions</span>
-              <ExternalLink size={12} />
             </a>
           </div>
         </div>

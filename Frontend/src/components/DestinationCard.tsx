@@ -1,16 +1,22 @@
 import { useNavigate } from 'react-router-dom';
-import { Heart, Star } from 'lucide-react';
+import { Heart, Star, Navigation } from 'lucide-react';
 import type { Destination } from '../services/api';
 import { useWishlist } from '../context/WishlistContext';
+import { getTravelEstimates, type GeoPoint } from '../utils/geoUtils';
 
 interface DestinationCardProps {
   destination: Destination;
+  userLocation?: GeoPoint | null;
 }
 
-export const DestinationCard: React.FC<DestinationCardProps> = ({ destination }) => {
+export const DestinationCard: React.FC<DestinationCardProps> = ({ destination, userLocation }) => {
   const navigate = useNavigate();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const isFavorited = isInWishlist(destination.id);
+
+  const travelEstimate = (userLocation && destination.latitude != null && destination.longitude != null)
+    ? getTravelEstimates(userLocation.latitude, userLocation.longitude, destination.latitude, destination.longitude).DRIVING
+    : null;
 
   return (
     <div 
@@ -24,6 +30,14 @@ export const DestinationCard: React.FC<DestinationCardProps> = ({ destination })
         loading="lazy"
       />
       <div className="destination-card-overlay" />
+
+      {/* Travel Duration from User Badge (if available) */}
+      {travelEstimate && (
+        <div className="destination-travel-badge">
+          <Navigation size={11} />
+          <span>{travelEstimate.durationText} ({travelEstimate.distanceText})</span>
+        </div>
+      )}
 
       {/* Wishlist Heart Button */}
       <button 
