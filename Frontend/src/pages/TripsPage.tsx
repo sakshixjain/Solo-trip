@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, LayoutGrid, Map as MapIcon } from 'lucide-react';
+import { Search, LayoutGrid, Map as MapIcon, Users, User, MapPin } from 'lucide-react';
 import { TripCard } from '../components/TripCard';
 import { GoogleMapView } from '../components/GoogleMapView';
 import type { Destination } from '../services/api';
@@ -10,9 +10,13 @@ export const TripsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
   const initialCategory = searchParams.get('type') || 'All';
+  const initialStyle = searchParams.get('style') || 'All';
+  const initialOrigin = searchParams.get('origin') || '';
 
   const [destinations, setDestinations] = useState<Destination[]>(INITIAL_DESTINATIONS);
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
+  const [travelStyle, setTravelStyle] = useState<string>(initialStyle); // 'All' | 'Solo' | 'Group'
+  const [selectedOrigin, setSelectedOrigin] = useState<string>(initialOrigin);
   const [searchTerm, setSearchTerm] = useState<string>(initialQuery);
   const [sortBy, setSortBy] = useState<string>('recommended');
   const [priceMax, setPriceMax] = useState<number>(50000);
@@ -25,9 +29,19 @@ export const TripsPage: React.FC = () => {
     });
   }, []);
 
-  const categories = ['All', 'Adventure', 'Beach', 'Mountains', 'Culture', 'Wildlife'];
+  const categories = ['All', 'Adventure', 'Beach', 'Mountains', 'Culture', 'Wellness'];
 
   const filteredTrips = destinations.filter((trip) => {
+    // Travel style match (Solo vs Group)
+    if (travelStyle === 'Group' && !trip.groupInfo) return false;
+
+    // Origin city match
+    if (selectedOrigin && selectedOrigin !== '') {
+      if (!trip.groupInfo || !trip.groupInfo.originCity.toLowerCase().includes(selectedOrigin.toLowerCase())) {
+        return false;
+      }
+    }
+
     // Category match
     const categoryMatches =
       selectedCategory === 'All' ||
@@ -39,6 +53,8 @@ export const TripsPage: React.FC = () => {
       searchTerm === '' ||
       trip.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       trip.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (trip.groupInfo && trip.groupInfo.originCity.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (trip.groupInfo && trip.groupInfo.groupName.toLowerCase().includes(searchTerm.toLowerCase())) ||
       trip.tags.some((t) => t.toLowerCase().includes(searchTerm.toLowerCase()));
 
     // Price match
@@ -59,15 +75,15 @@ export const TripsPage: React.FC = () => {
   const displayedTrips = sortedTrips.slice(0, visibleCount);
 
   return (
-    <div className="container" style={{ paddingTop: 40, paddingBottom: 80 }}>
+    <div className="container" style={{ paddingTop: 36, paddingBottom: 80 }}>
       {/* Page Title Header with View Mode Toggle */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#0f172a', marginBottom: 6 }}>
-            Browse Trips
+          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#0f172a', marginBottom: 4 }}>
+            Explore Trips & Group Tours
           </h1>
-          <p style={{ color: '#64748b', fontSize: '1.05rem' }}>
-            Handpicked trips designed specifically for solo travelers
+          <p style={{ color: '#64748b', fontSize: '0.98rem' }}>
+            Choose between independent solo travel or join curated group batches departing from key cities.
           </p>
         </div>
 
@@ -79,7 +95,7 @@ export const TripsPage: React.FC = () => {
             onClick={() => setViewMode('grid')}
             title="Grid View"
           >
-            <LayoutGrid size={16} />
+            <LayoutGrid size={15} />
             <span>Grid</span>
           </button>
           <button
@@ -88,15 +104,39 @@ export const TripsPage: React.FC = () => {
             onClick={() => setViewMode('map')}
             title="Interactive Google Map View"
           >
-            <MapIcon size={16} />
+            <MapIcon size={15} />
             <span>Map View</span>
           </button>
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 36 }}>
-        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* Travel Style Tabs: All | Solo | Group */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
+        <button
+          className={`filter-pill ${travelStyle === 'All' ? 'active' : ''}`}
+          onClick={() => setTravelStyle('All')}
+        >
+          All Adventures ({destinations.length})
+        </button>
+        <button
+          className={`filter-pill ${travelStyle === 'Solo' ? 'active' : ''}`}
+          onClick={() => setTravelStyle('Solo')}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+        >
+          <User size={14} /> Solo Expeditions
+        </button>
+        <button
+          className={`filter-pill ${travelStyle === 'Group' ? 'active' : ''}`}
+          onClick={() => setTravelStyle('Group')}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+        >
+          <Users size={14} /> Group Tours (With Departure Cities)
+        </button>
+      </div>
+
+      {/* Filter and Search Controls Bar */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 32 }}>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Category Filter Pills */}
           <div className="filter-pills">
             {categories.map((cat) => (
@@ -110,20 +150,42 @@ export const TripsPage: React.FC = () => {
             ))}
           </div>
 
-          {/* Sort By Dropdown */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: 600 }}>Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="sort-select"
-            >
-              <option value="recommended">Recommended</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="rating">Top Rated</option>
-              <option value="duration">Trip Duration</option>
-            </select>
+          {/* Group Origin City & Sort Selects */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            {/* Departure Origin Filter */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: '0.84rem', color: '#64748b', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <MapPin size={13} /> Group From:
+              </span>
+              <select
+                value={selectedOrigin}
+                onChange={(e) => setSelectedOrigin(e.target.value)}
+                className="sort-select"
+              >
+                <option value="">All Departure Cities</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Bangalore">Bangalore</option>
+                <option value="Chandigarh">Chandigarh</option>
+                <option value="All-India">All-India Pickup</option>
+              </select>
+            </div>
+
+            {/* Sort Dropdown */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: '0.84rem', color: '#64748b', fontWeight: 600 }}>Sort:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="sort-select"
+              >
+                <option value="recommended">Recommended</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="rating">Top Rated</option>
+                <option value="duration">Trip Duration</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -133,26 +195,26 @@ export const TripsPage: React.FC = () => {
             display: 'flex', 
             gap: 16, 
             background: '#ffffff', 
-            padding: 16, 
-            borderRadius: 16, 
-            border: '1px solid #e2e8f0',
+            padding: 14, 
+            borderRadius: 'var(--radius-md)', 
+            border: '1px solid var(--border-light)',
             flexWrap: 'wrap',
             alignItems: 'center' 
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 240 }}>
-            <Search size={18} color="#94a3b8" />
+            <Search size={17} color="#94a3b8" />
             <input
               type="text"
-              placeholder="Search by city, activity (e.g. Paragliding, Temples, Beach)..."
+              placeholder="Search by city, group name (e.g. Delhi, Spiti, Rafting)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.95rem' }}
+              style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.92rem' }}
             />
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 220 }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b' }}>
+            <span style={{ fontSize: '0.84rem', fontWeight: 600, color: '#64748b' }}>
               Max Budget: ₹{priceMax.toLocaleString('en-IN')}
             </span>
             <input
@@ -174,25 +236,27 @@ export const TripsPage: React.FC = () => {
           <div 
             style={{ 
               textAlign: 'center', 
-              padding: '60px 20px', 
+              padding: '50px 20px', 
               background: '#ffffff', 
-              borderRadius: 16, 
-              border: '1px solid #e2e8f0' 
+              borderRadius: 'var(--radius-md)', 
+              border: '1px solid var(--border-light)' 
             }}
           >
-            <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: 8 }}>No trips match your filters</h3>
-            <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: 20 }}>
-              Try adjusting your search keyword, category, or maximum budget slider.
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: 8 }}>No trips match your filters</h3>
+            <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: 18 }}>
+              Try switching travel style, departure city, or clearing the search term.
             </p>
             <button 
               className="btn btn-primary btn-sm"
               onClick={() => {
                 setSelectedCategory('All');
+                setTravelStyle('All');
+                setSelectedOrigin('');
                 setSearchTerm('');
                 setPriceMax(50000);
               }}
             >
-              Reset Filters
+              Reset All Filters
             </button>
           </div>
         ) : (
@@ -205,10 +269,10 @@ export const TripsPage: React.FC = () => {
 
             {/* Load More Button */}
             {visibleCount < sortedTrips.length && (
-              <div style={{ textAlign: 'center', marginTop: 48 }}>
+              <div style={{ textAlign: 'center', marginTop: 40 }}>
                 <button
                   className="btn btn-primary"
-                  style={{ padding: '12px 32px' }}
+                  style={{ padding: '10px 28px' }}
                   onClick={() => setVisibleCount((prev) => prev + 6)}
                 >
                   Load More Trips ({sortedTrips.length - visibleCount} remaining)
@@ -225,15 +289,15 @@ export const TripsPage: React.FC = () => {
                 Showing {sortedTrips.length} curated trips on Google Maps
               </span>
             </div>
-            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-              Click any location marker to view trip duration, pricing, and book your spot
+            <span style={{ fontSize: '0.84rem', color: '#64748b' }}>
+              Click any location marker to view trip duration, pricing, and group details
             </span>
           </div>
 
-          <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 6px 24px rgba(0,0,0,0.06)' }}>
+          <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--border-light)', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
             <GoogleMapView
               destinations={sortedTrips}
-              height="560px"
+              height="540px"
               showControls={true}
             />
           </div>

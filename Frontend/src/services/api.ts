@@ -18,6 +18,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+export interface GroupInfo {
+  originCity: string; // e.g. "Delhi", "Bangalore", "Mumbai", "Chandigarh", "All-India"
+  departurePoint: string; // e.g. "Kashmiri Gate Metro Gate No. 6, Delhi"
+  groupName: string; // e.g. "Delhi Weekend Explorers Group"
+  groupType: string; // e.g. "Youth & Solo Backpackers (20-35 yrs)"
+  ageGroup: string; // e.g. "20 - 35 yrs"
+  totalSeats: number;
+  bookedSeats: number;
+  nextBatchDate: string; // e.g. "Every Friday (12 Sep)"
+  upcomingBatches: string[];
+  tripCaptain: string;
+  genderRatio?: string;
+}
+
 export interface Destination {
   id: string | number;
   name: string;
@@ -43,6 +57,8 @@ export interface Destination {
   tripType: string;
   difficulty: string;
   groupSize: string;
+  travelType?: 'Solo' | 'Group' | 'Both';
+  groupInfo?: GroupInfo;
   itinerary: {
     day: number;
     title: string;
@@ -144,7 +160,21 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     bestTime: 'Mar - Jun, Sep - Nov',
     tripType: 'Adventure, Leisure',
     difficulty: 'Easy to Moderate',
-    groupSize: '1 - 12 People',
+    groupSize: '1 - 14 People',
+    travelType: 'Both',
+    groupInfo: {
+      originCity: 'Delhi',
+      departurePoint: 'Kashmiri Gate Metro Gate No. 6 & Majnu Ka Tilla, Delhi',
+      groupName: 'Delhi Weekend Backpackers & Trekkers Batch',
+      groupType: 'Young Professionals & Solo Backpackers (20-35 yrs)',
+      ageGroup: '20 - 35 yrs',
+      totalSeats: 14,
+      bookedSeats: 10,
+      nextBatchDate: 'Every Friday (12 Sep)',
+      upcomingBatches: ['12 Sep 2026', '19 Sep 2026', '26 Sep 2026'],
+      tripCaptain: 'Capt. Vikram (Certified Himalayan Trek Leader)',
+      genderRatio: '50% Female / 50% Male'
+    },
     itinerary: [
       {
         day: 1,
@@ -225,6 +255,20 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     tripType: 'Culture, Wellness',
     difficulty: 'Easy',
     groupSize: '1 - 10 People',
+    travelType: 'Both',
+    groupInfo: {
+      originCity: 'All-India',
+      departurePoint: 'Denpasar Ngurah Rai Airport, Bali (Pan-India Flight Connect)',
+      groupName: 'International Solo Travelers Bali Batch',
+      groupType: 'Wellness, Culture & Island Explorers',
+      ageGroup: '22 - 40 yrs',
+      totalSeats: 10,
+      bookedSeats: 7,
+      nextBatchDate: '25 Sep 2026',
+      upcomingBatches: ['25 Sep 2026', '15 Oct 2026', '10 Nov 2026'],
+      tripCaptain: 'Wayan Sudarta (Bali Island Host)',
+      genderRatio: '60% Female / 40% Male'
+    },
     itinerary: [
       { day: 1, title: 'Arrival & Welcome to Ubud', description: 'Arrive at Ngurah Rai Airport, transfer to Ubud eco-resort, evening sound healing meditation.' },
       { day: 2, title: 'Tegalalang Rice Terraces & Coffee Plantation', description: 'Early morning photography at the lush rice terraces and traditional Luwak coffee tasting.' },
@@ -266,7 +310,21 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     bestTime: 'Jun - Sep',
     tripType: 'Adventure, Expedition',
     difficulty: 'Moderate to High',
-    groupSize: '1 - 8 People',
+    groupSize: '1 - 10 People',
+    travelType: 'Both',
+    groupInfo: {
+      originCity: 'Delhi',
+      departurePoint: 'Majnu Ka Tilla, New Delhi & Chandigarh Sector 43 ISBT',
+      groupName: 'Delhi-Chandigarh Spiti Expedition Group',
+      groupType: 'Roadtrippers, Photographers & Stargazers',
+      ageGroup: '21 - 38 yrs',
+      totalSeats: 10,
+      bookedSeats: 7,
+      nextBatchDate: '15 Sep 2026',
+      upcomingBatches: ['15 Sep 2026', '22 Sep 2026', '29 Sep 2026'],
+      tripCaptain: 'Rahul Negi (Spiti Expedition Lead)',
+      genderRatio: '45% Female / 55% Male'
+    },
     itinerary: [
       { day: 1, title: 'Shimla to Kalpa', description: 'Drive along Sutlej river with stunning views of Kinnaur Kailash.' },
       { day: 2, title: 'Kalpa to Tabo via Nako Lake', description: 'Visit 1000-year-old Tabo Monastery.' },
@@ -308,7 +366,21 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     bestTime: 'Mar - Jun, Sep - Nov',
     tripType: 'Trek, Chill',
     difficulty: 'Easy',
-    groupSize: '1 - 15 People',
+    groupSize: '1 - 16 People',
+    travelType: 'Both',
+    groupInfo: {
+      originCity: 'Delhi',
+      departurePoint: 'Vidhan Sabha Metro Station, Delhi & Chandigarh',
+      groupName: 'Delhi Cafe & Mountain Wanderers Group',
+      groupType: 'Weekend Backpackers & Solo Explorers',
+      ageGroup: '19 - 32 yrs',
+      totalSeats: 16,
+      bookedSeats: 12,
+      nextBatchDate: 'Every Thursday Evening',
+      upcomingBatches: ['11 Sep 2026', '18 Sep 2026', '25 Sep 2026'],
+      tripCaptain: 'Aanchal Verma (Community Host)',
+      genderRatio: '55% Female / 45% Male'
+    },
     itinerary: [
       { day: 1, title: 'Arrival & Riverside Walk', description: 'Explore Kasol market and riverside Israeli cafes.' },
       { day: 2, title: 'Trek to Tosh / Chalal', description: 'Scenic day trek through cedar woods to remote mountain village.' },
@@ -347,6 +419,20 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     tripType: 'Heritage, Photography',
     difficulty: 'Easy',
     groupSize: '1 - 8 People',
+    travelType: 'Both',
+    groupInfo: {
+      originCity: 'All-India',
+      departurePoint: 'Kansai International Airport (KIX), Osaka/Kyoto',
+      groupName: 'Japan Heritage Explorer Group',
+      groupType: 'Culture & Photography Enthusiasts',
+      ageGroup: '22 - 45 yrs',
+      totalSeats: 8,
+      bookedSeats: 5,
+      nextBatchDate: '10 Oct 2026',
+      upcomingBatches: ['10 Oct 2026', '24 Oct 2026', '14 Nov 2026'],
+      tripCaptain: 'Kenji Sato (Kyoto Resident Host)',
+      genderRatio: '50% Female / 50% Male'
+    },
     itinerary: [
       { day: 1, title: 'Gion District & Traditional Tea Ceremony', description: 'Walk the historic geisha district of Gion.' },
       { day: 2, title: 'Fushimi Inari-taisha & 10,000 Torii Gates', description: 'Early morning hike through sacred orange torii gates.' },
@@ -386,7 +472,21 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     bestTime: 'Nov - Feb',
     tripType: 'Beach, Party, Leisure',
     difficulty: 'Easy',
-    groupSize: '1 - 15 People',
+    groupSize: '1 - 16 People',
+    travelType: 'Both',
+    groupInfo: {
+      originCity: 'Mumbai',
+      departurePoint: 'Dadar TT Circle, Mumbai & Wakad, Pune (AC Sleeper Bus)',
+      groupName: 'Mumbai-Pune Coastal Explorers Group',
+      groupType: 'Young Professionals & Beach Lovers (21-36 yrs)',
+      ageGroup: '21 - 36 yrs',
+      totalSeats: 16,
+      bookedSeats: 13,
+      nextBatchDate: '18 Sep 2026',
+      upcomingBatches: ['18 Sep 2026', '25 Sep 2026', '02 Oct 2026'],
+      tripCaptain: 'Siddharth Rao (Goa Community Host)',
+      genderRatio: '50% Female / 50% Male'
+    },
     itinerary: [
       { day: 1, title: 'North Goa Check-in & Sunset at Vagator', description: 'Meet the crew at Anjuna beach hostel.' },
       { day: 2, title: 'Kayaking & Hidden Beach Hopping', description: 'Kayaking along the backwaters and Morjim beach.' },
@@ -426,7 +526,21 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     bestTime: 'Mar - Jun, Sep - Dec',
     tripType: 'Trek, Camping',
     difficulty: 'Moderate',
-    groupSize: '1 - 12 People',
+    groupSize: '1 - 14 People',
+    travelType: 'Both',
+    groupInfo: {
+      originCity: 'Delhi',
+      departurePoint: 'Majnu Ka Tilla, Delhi & Sector 43, Chandigarh',
+      groupName: 'Delhi Dhauladhar Trekking Batch',
+      groupType: 'Beginner Trekkers & Nature Photographers',
+      ageGroup: '20 - 35 yrs',
+      totalSeats: 14,
+      bookedSeats: 9,
+      nextBatchDate: '12 Sep 2026',
+      upcomingBatches: ['12 Sep 2026', '19 Sep 2026', '26 Sep 2026'],
+      tripCaptain: 'Capt. Aman (Certified Mountain Guide)',
+      genderRatio: '50% Female / 50% Male'
+    },
     itinerary: [
       { day: 1, title: 'Arrive McLeodganj & Dalai Lama Temple', description: 'Explore Little Lhasa and Tibetan monastery.' },
       { day: 2, title: 'Trek to Triund Top & Sunset Camp', description: '4-5 hour picturesque trek to Triund ridge with stargazing.' },
@@ -465,7 +579,21 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     bestTime: 'Sep - May',
     tripType: 'Adventure, Spiritual',
     difficulty: 'Easy',
-    groupSize: '1 - 15 People',
+    groupSize: '1 - 18 People',
+    travelType: 'Both',
+    groupInfo: {
+      originCity: 'Delhi',
+      departurePoint: 'Akshardham Metro Station & Anand Vihar, Delhi',
+      groupName: 'Delhi Adrenaline & River Rafting Batch',
+      groupType: 'Adventure Seekers & Campers (20-34 yrs)',
+      ageGroup: '20 - 34 yrs',
+      totalSeats: 18,
+      bookedSeats: 15,
+      nextBatchDate: 'Every Weekend (Friday Night)',
+      upcomingBatches: ['12 Sep 2026', '19 Sep 2026', '26 Sep 2026'],
+      tripCaptain: 'Devendra Rawat (Certified River Guide)',
+      genderRatio: '45% Female / 55% Male'
+    },
     itinerary: [
       { day: 1, title: 'Riverside Camp Check-in & Triveni Ghat Aarti', description: 'Evening spiritual chants by the holy river.' },
       { day: 2, title: '16KM White Water Rafting & Cliff Jumping', description: 'Conquer the Roller Coaster and Golf Course rapids.' },
@@ -503,7 +631,21 @@ export const INITIAL_DESTINATIONS: Destination[] = [
     bestTime: 'Oct - Mar',
     tripType: 'Heritage, Food Walk',
     difficulty: 'Easy',
-    groupSize: '1 - 10 People',
+    groupSize: '1 - 12 People',
+    travelType: 'Both',
+    groupInfo: {
+      originCity: 'Delhi',
+      departurePoint: 'Dhaula Kuan & IFFCO Chowk Gurgaon, Delhi-NCR',
+      groupName: 'Delhi Heritage Walk & Forts Group',
+      groupType: 'History, Foodies & Photography Enthusiasts',
+      ageGroup: '21 - 42 yrs',
+      totalSeats: 12,
+      bookedSeats: 8,
+      nextBatchDate: '19 Sep 2026',
+      upcomingBatches: ['19 Sep 2026', '26 Sep 2026', '03 Oct 2026'],
+      tripCaptain: 'Meera Rajput (Rajasthan Heritage Specialist)',
+      genderRatio: '50% Female / 50% Male'
+    },
     itinerary: [
       { day: 1, title: 'Hawa Mahal & City Palace Walk', description: 'Explore iconic honeycomb facade and royal museum.' },
       { day: 2, title: 'Amer Fort & Nahargarh Sunset', description: 'Panoramic sunset view over the pink city from Nahargarh fort.' },
@@ -585,6 +727,95 @@ export const INITIAL_STORIES: Story[] = [
   }
 ];
 
+export interface GalleryPhoto {
+  id: string | number;
+  imageUrl: string;
+  caption: string;
+  travelerName: string;
+  travelerAvatar?: string;
+  location: string;
+  category: 'Mountains' | 'Beach' | 'Culture' | 'Adventure' | 'Group Fun' | 'Solo Moments';
+  tripMode: 'Solo' | 'Group';
+  date: string;
+  likesCount: number;
+  isLiked?: boolean;
+}
+
+export const INITIAL_GALLERY_PHOTOS: GalleryPhoto[] = [
+  {
+    id: 1,
+    imageUrl: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&w=1200&q=80',
+    caption: 'Sunset laughter with our 12-member group batch at Anjuna Beach!',
+    travelerName: 'Pooja Hegde & Mumbai Batch',
+    travelerAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
+    location: 'Goa Beach Escape',
+    category: 'Group Fun',
+    tripMode: 'Group',
+    date: 'Aug 2026',
+    likesCount: 148
+  },
+  {
+    id: 2,
+    imageUrl: 'https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?auto=format&fit=crop&w=1200&q=80',
+    caption: 'Solo reflection at Key Monastery, Spiti. Pure silence and peace.',
+    travelerName: 'Aarav Sharma',
+    travelerAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+    location: 'Spiti Valley Road Trip',
+    category: 'Mountains',
+    tripMode: 'Solo',
+    date: 'Jul 2026',
+    likesCount: 230
+  },
+  {
+    id: 3,
+    imageUrl: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1200&q=80',
+    caption: 'Delhi Wanderers Crew crossing the wooden bridge in Kasol valley.',
+    travelerName: 'Capt. Vikram & Delhi Crew',
+    travelerAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+    location: 'Kasol & Tosh, Parvati Valley',
+    category: 'Group Fun',
+    tripMode: 'Group',
+    date: 'Aug 2026',
+    likesCount: 95
+  },
+  {
+    id: 4,
+    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80',
+    caption: 'Conquered Triund summit at 2,875m! Snow-clad Dhauladhar peaks.',
+    travelerName: 'Simran Walia',
+    travelerAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+    location: 'Trek to Triund',
+    category: 'Adventure',
+    tripMode: 'Solo',
+    date: 'Jun 2026',
+    likesCount: 182
+  },
+  {
+    id: 5,
+    imageUrl: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80',
+    caption: 'Morning rice terrace walk in Ubud, Bali with fellow solo backpackers.',
+    travelerName: 'Rohan Mehra',
+    travelerAvatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=200&q=80',
+    location: 'Ubud, Bali',
+    category: 'Culture',
+    tripMode: 'Group',
+    date: 'Jul 2026',
+    likesCount: 310
+  },
+  {
+    id: 6,
+    imageUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80',
+    caption: 'Rafting down the mighty Ganges in Rishikesh! Best adrenaline rush ever.',
+    travelerName: 'Delhi Adrenaline Batch',
+    travelerAvatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80',
+    location: 'Rishikesh Adventure',
+    category: 'Adventure',
+    tripMode: 'Group',
+    date: 'Aug 2026',
+    likesCount: 204
+  }
+];
+
 export const INITIAL_DISCUSSIONS: Discussion[] = [
   {
     id: 1,
@@ -642,45 +873,16 @@ export const INITIAL_DISCUSSIONS: Discussion[] = [
   }
 ];
 
-// Helper functions that query backend or fallback to initial data
+// Helper functions that provide dynamic CRUD operations with persistent storage
 export const fetchDestinations = async (): Promise<Destination[]> => {
   try {
-    const res = await api.get('/api/places');
-    if (res.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
-      // Map backend place records to frontend Destination model
-      return res.data.data.map((p: any) => ({
-        id: p.place_id || p.id,
-        name: p.place_name || p.name,
-        location: `${p.city || ''}, ${p.state || ''}`,
-        country: 'India',
-        city: p.city || '',
-        state: p.state || '',
-        address: p.address || `${p.place_name || ''}, ${p.city || ''}, ${p.state || ''}`,
-        latitude: p.latitude != null ? Number(p.latitude) : undefined,
-        longitude: p.longitude != null ? Number(p.longitude) : undefined,
-        category: p.Category?.category_name || 'Adventure',
-        tags: [p.Category?.category_name || 'Adventure', 'Nature'],
-        rating: 4.8,
-        reviewsCount: p.Reviews?.length || 12,
-        price: p.entry_fee ? Number(p.entry_fee) * 10 : 6999,
-        duration: '4 Days / 3 Nights',
-        days: 4,
-        nights: 3,
-        image: p.PlaceImages?.[0]?.image_url || 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=80',
-        gallery: p.PlaceImages?.map((img: any) => img.image_url) || ['https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=80'],
-        about: p.description || 'A stunning destination for solo travelers.',
-        bestTime: 'Oct - Mar',
-        tripType: 'Adventure, Leisure',
-        difficulty: 'Easy to Moderate',
-        groupSize: '1 - 12 People',
-        itinerary: INITIAL_DESTINATIONS[0].itinerary,
-        inclusions: INITIAL_DESTINATIONS[0].inclusions,
-        exclusions: INITIAL_DESTINATIONS[0].exclusions,
-        reviews: INITIAL_DESTINATIONS[0].reviews
-      }));
+    const saved = localStorage.getItem('solotrip_destinations');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     }
   } catch (err) {
-    console.warn('Backend /api/places not populated yet, using curated SoloTrip dataset:', err);
+    console.warn('Could not parse saved destinations:', err);
   }
   return INITIAL_DESTINATIONS;
 };
@@ -690,4 +892,139 @@ export const fetchDestinationById = async (id: string | number): Promise<Destina
   return all.find((d) => String(d.id) === String(id)) || INITIAL_DESTINATIONS.find((d) => String(d.id) === String(id)) || INITIAL_DESTINATIONS[0];
 };
 
+export const saveDestination = async (dest: Destination): Promise<Destination[]> => {
+  const all = await fetchDestinations();
+  const existingIdx = all.findIndex((d) => String(d.id) === String(dest.id));
+  let updated: Destination[];
+  if (existingIdx >= 0) {
+    updated = [...all];
+    updated[existingIdx] = dest;
+  } else {
+    updated = [dest, ...all];
+  }
+  localStorage.setItem('solotrip_destinations', JSON.stringify(updated));
+  return updated;
+};
+
+export const deleteDestination = async (id: string | number): Promise<Destination[]> => {
+  const all = await fetchDestinations();
+  const filtered = all.filter((d) => String(d.id) !== String(id));
+  localStorage.setItem('solotrip_destinations', JSON.stringify(filtered));
+  return filtered;
+};
+
+// Gallery Management Functions
+export const fetchGalleryPhotos = async (): Promise<GalleryPhoto[]> => {
+  try {
+    const saved = localStorage.getItem('solotrip_gallery');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (err) {
+    console.warn('Could not parse saved gallery photos:', err);
+  }
+  return INITIAL_GALLERY_PHOTOS;
+};
+
+export const saveGalleryPhoto = async (photo: GalleryPhoto): Promise<GalleryPhoto[]> => {
+  const all = await fetchGalleryPhotos();
+  const existingIdx = all.findIndex((p) => String(p.id) === String(photo.id));
+  let updated: GalleryPhoto[];
+  if (existingIdx >= 0) {
+    updated = [...all];
+    updated[existingIdx] = photo;
+  } else {
+    updated = [photo, ...all];
+  }
+  localStorage.setItem('solotrip_gallery', JSON.stringify(updated));
+  return updated;
+};
+
+export const deleteGalleryPhoto = async (id: string | number): Promise<GalleryPhoto[]> => {
+  const all = await fetchGalleryPhotos();
+  const filtered = all.filter((p) => String(p.id) !== String(id));
+  localStorage.setItem('solotrip_gallery', JSON.stringify(filtered));
+  return filtered;
+};
+
+export const likeGalleryPhoto = async (id: string | number): Promise<GalleryPhoto[]> => {
+  const all = await fetchGalleryPhotos();
+  const updated = all.map((p) => {
+    if (String(p.id) === String(id)) {
+      const isLiked = !p.isLiked;
+      return {
+        ...p,
+        isLiked,
+        likesCount: isLiked ? p.likesCount + 1 : Math.max(0, p.likesCount - 1)
+      };
+    }
+    return p;
+  });
+  localStorage.setItem('solotrip_gallery', JSON.stringify(updated));
+  return updated;
+};
+
+// Bookings Management Functions
+export const fetchAllBookings = async (): Promise<Booking[]> => {
+  try {
+    const saved = localStorage.getItem('solotrip_bookings');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (err) {
+    console.warn('Could not parse saved bookings:', err);
+  }
+  return [
+    {
+      id: 'BK-1049',
+      destinationId: 1,
+      destinationName: 'Manali, Himachal Pradesh',
+      destinationImage: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=80',
+      date: '2026-09-12',
+      travelers: 1,
+      totalPrice: 6999,
+      status: 'Confirmed',
+      bookedAt: '2026-08-27',
+      userName: 'Aarav Sharma',
+      userEmail: 'aarav.sharma@example.com'
+    },
+    {
+      id: 'BK-1050',
+      destinationId: 3,
+      destinationName: 'Spiti Valley Road Trip',
+      destinationImage: 'https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?auto=format&fit=crop&w=1200&q=80',
+      date: '2026-09-15',
+      travelers: 2,
+      totalPrice: 37998,
+      status: 'Confirmed',
+      bookedAt: '2026-08-28',
+      userName: 'Pooja Hegde',
+      userEmail: 'pooja.h@example.com'
+    },
+    {
+      id: 'BK-1051',
+      destinationId: 6,
+      destinationName: 'Goa Beach Escape',
+      destinationImage: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=80',
+      date: '2026-09-18',
+      travelers: 1,
+      totalPrice: 8999,
+      status: 'Pending',
+      bookedAt: '2026-08-28',
+      userName: 'Kunal Singhania',
+      userEmail: 'kunal.s@example.com'
+    }
+  ];
+};
+
+export const updateBookingStatus = async (id: string, status: 'Confirmed' | 'Pending' | 'Completed'): Promise<Booking[]> => {
+  const all = await fetchAllBookings();
+  const updated = all.map((b) => (b.id === id ? { ...b, status } : b));
+  localStorage.setItem('solotrip_bookings', JSON.stringify(updated));
+  return updated;
+};
+
 export default api;
+

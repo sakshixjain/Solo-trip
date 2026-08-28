@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Heart, Star, Navigation } from 'lucide-react';
+import { Heart, Star, Navigation, Users } from 'lucide-react';
 import type { Destination } from '../services/api';
 import { useWishlist } from '../context/WishlistContext';
 import { getTravelEstimates, type GeoPoint } from '../utils/geoUtils';
@@ -18,6 +18,8 @@ export const DestinationCard: React.FC<DestinationCardProps> = ({ destination, u
     ? getTravelEstimates(userLocation.latitude, userLocation.longitude, destination.latitude, destination.longitude).DRIVING
     : null;
 
+  const groupInfo = destination.groupInfo;
+
   return (
     <div 
       className="destination-card"
@@ -31,13 +33,32 @@ export const DestinationCard: React.FC<DestinationCardProps> = ({ destination, u
       />
       <div className="destination-card-overlay" />
 
-      {/* Travel Duration from User Badge (if available) */}
-      {travelEstimate && (
-        <div className="destination-travel-badge">
-          <Navigation size={11} />
-          <span>{travelEstimate.durationText} ({travelEstimate.distanceText})</span>
-        </div>
-      )}
+      {/* Top Badges */}
+      <div style={{ position: 'absolute', top: 10, left: 10, display: 'flex', flexDirection: 'column', gap: 5, zIndex: 3 }}>
+        {travelEstimate && (
+          <div className="destination-travel-badge">
+            <Navigation size={11} />
+            <span>{travelEstimate.durationText}</span>
+          </div>
+        )}
+        {groupInfo && (
+          <div 
+            style={{ 
+              background: 'rgba(15, 23, 42, 0.85)', 
+              color: '#38bdf8', 
+              fontSize: '0.72rem', 
+              fontWeight: 700, 
+              padding: '3px 8px', 
+              borderRadius: 'var(--radius-sm)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4
+            }}
+          >
+            <Users size={11} /> Group: {groupInfo.originCity}
+          </div>
+        )}
+      </div>
 
       {/* Wishlist Heart Button */}
       <button 
@@ -48,7 +69,7 @@ export const DestinationCard: React.FC<DestinationCardProps> = ({ destination, u
         }}
         title={isFavorited ? 'Remove from wishlist' : 'Save to wishlist'}
       >
-        <Heart size={16} fill={isFavorited ? '#f43f5e' : 'none'} stroke={isFavorited ? '#f43f5e' : '#ffffff'} />
+        <Heart size={15} fill={isFavorited ? '#f43f5e' : 'none'} stroke={isFavorited ? '#f43f5e' : '#ffffff'} />
       </button>
 
       {/* Bottom Content */}
@@ -57,10 +78,15 @@ export const DestinationCard: React.FC<DestinationCardProps> = ({ destination, u
         <p className="destination-tags">
           {destination.tags.slice(0, 2).join(' · ')}
         </p>
-        <div className="destination-rating">
-          <Star size={13} fill="#fbbf24" stroke="#fbbf24" />
-          <span>{destination.rating.toFixed(1)}</span>
-          <span className="destination-review-count">({destination.reviewsCount})</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="destination-rating">
+            <Star size={12} fill="#fbbf24" stroke="#fbbf24" />
+            <span>{destination.rating.toFixed(1)}</span>
+            <span className="destination-review-count">({destination.reviewsCount})</span>
+          </div>
+          <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#ffffff' }}>
+            ₹{destination.price.toLocaleString('en-IN')}
+          </span>
         </div>
       </div>
     </div>

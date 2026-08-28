@@ -14,6 +14,8 @@ import { TripDetailPage } from './pages/TripDetailPage';
 import { DestinationsPage } from './pages/DestinationsPage';
 import { StoriesPage } from './pages/StoriesPage';
 import { CommunityPage } from './pages/CommunityPage';
+import { GalleryPage } from './pages/GalleryPage';
+import { AdminPage } from './pages/AdminPage';
 import { WishlistPage } from './pages/WishlistPage';
 import { MyBookingsPage } from './pages/MyBookingsPage';
 import { AboutPage } from './pages/AboutPage';
@@ -35,6 +37,8 @@ function App() {
                 <Route path="/trips/:id" element={<TripDetailPage />} />
                 <Route path="/destinations" element={<DestinationsPage />} />
                 <Route path="/destinations/:id" element={<TripDetailPage />} />
+                <Route path="/gallery" element={<GalleryPage />} />
+                <Route path="/admin" element={<AdminPage />} />
                 <Route path="/stories" element={<StoriesPage />} />
                 <Route path="/community" element={<CommunityPage />} />
                 <Route path="/wishlist" element={<WishlistPage />} />

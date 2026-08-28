@@ -264,13 +264,90 @@ export const TripDetailPage: React.FC = () => {
           {/* Tab Content 1: Overview */}
           {activeTab === 'overview' && (
             <div className="animate-fade-in">
+              {/* Group Tour Departure & Crowd Details Card (If available) */}
+              {destination.groupInfo && (
+                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: 'var(--radius-md)', padding: 20, marginBottom: 24 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Users size={18} color="#0284c7" />
+                      <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
+                        Group Tour & Departure Info
+                      </h4>
+                    </div>
+                    <span 
+                      style={{ 
+                        background: '#0284c7', 
+                        color: '#ffffff', 
+                        fontSize: '0.76rem', 
+                        fontWeight: 700, 
+                        padding: '3px 10px', 
+                        borderRadius: 'var(--radius-sm)' 
+                      }}
+                    >
+                      📍 Origin: {destination.groupInfo.originCity}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 16 }}>
+                    <div>
+                      <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>Pickup & Meeting Point</div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0f172a' }}>
+                        {destination.groupInfo.departurePoint}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>Batch Crowd & Age Group</div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0f172a' }}>
+                        {destination.groupInfo.groupType} ({destination.groupInfo.ageGroup})
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>Next Departure Batch</div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#059669' }}>
+                        📅 {destination.groupInfo.nextBatchDate}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>Trip Captain / Guide</div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0f172a' }}>
+                        🧭 {destination.groupInfo.tripCaptain}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Seat Booking Progress */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: 6 }}>
+                      <span style={{ color: '#475569', fontWeight: 600 }}>
+                        Seat Availability: {destination.groupInfo.bookedSeats} of {destination.groupInfo.totalSeats} seats filled
+                      </span>
+                      <span style={{ color: '#ef4444', fontWeight: 700 }}>
+                        Only {destination.groupInfo.totalSeats - destination.groupInfo.bookedSeats} seats left!
+                      </span>
+                    </div>
+                    <div style={{ height: 6, background: '#e2e8f0', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
+                      <div 
+                        style={{ 
+                          height: '100%', 
+                          width: `${(destination.groupInfo.bookedSeats / destination.groupInfo.totalSeats) * 100}%`,
+                          background: '#0284c7' 
+                        }} 
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: 12 }}>
-                Solo Traveler Highlights
+                Solo & Group Traveler Highlights
               </h3>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
                 <li style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#334155' }}>
                   <ShieldCheck size={20} color="#10b981" /> 
-                  <span><strong>Solo Friendly Vibe:</strong> Safe curated hostels and homestays with verified security.</span>
+                  <span><strong>Safe Curated Stays:</strong> Verified hostels and boutique homestays with security checks.</span>
                 </li>
                 <li style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#334155' }}>
                   <Users size={20} color="#0284c7" /> 
@@ -278,7 +355,7 @@ export const TripDetailPage: React.FC = () => {
                 </li>
                 <li style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#334155' }}>
                   <Compass size={20} color="#f59e0b" /> 
-                  <span><strong>Local Guide Support:</strong> 24/7 on-ground assistance and safety leader.</span>
+                  <span><strong>Local Guide Support:</strong> 24/7 on-ground assistance and certified trek leaders.</span>
                 </li>
               </ul>
 

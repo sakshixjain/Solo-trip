@@ -54,6 +54,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
           <Link to="/destinations" className={`nav-link ${isActive('/destinations') ? 'active' : ''}`}>
             Destinations
           </Link>
+          <Link to="/gallery" className={`nav-link ${isActive('/gallery') ? 'active' : ''}`}>
+            Gallery
+          </Link>
           <Link to="/stories" className={`nav-link ${isActive('/stories') ? 'active' : ''}`}>
             Stories
           </Link>
@@ -62,6 +65,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
           </Link>
           <Link to="/about" className={`nav-link ${isActive('/about') ? 'active' : ''}`}>
             About Us
+          </Link>
+          <Link 
+            to="/admin" 
+            className={`nav-link ${isActive('/admin') ? 'active' : ''}`}
+            style={{ color: '#0284c7', fontWeight: 700 }}
+          >
+            Admin Panel
           </Link>
         </nav>
 
@@ -123,6 +133,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                     </div>
                   </div>
                   <div className="user-menu-divider" />
+                  <Link to="/admin" className="user-menu-item" style={{ color: '#0284c7', fontWeight: 700 }}>
+                    <Compass size={16} /> Admin Console
+                  </Link>
+                  <Link to="/gallery" className="user-menu-item">
+                    <Compass size={16} /> Traveler Gallery
+                  </Link>
                   <Link to="/wishlist" className="user-menu-item">
                     <Heart size={16} /> My Wishlist ({wishlistIds.length})
                   </Link>
@@ -206,6 +222,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Destinations
+          </Link>
+          <Link 
+            to="/gallery" 
+            className={`nav-link ${isActive('/gallery') ? 'active' : ''}`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Traveler Gallery
+          </Link>
+          <Link 
+            to="/admin" 
+            className={`nav-link ${isActive('/admin') ? 'active' : ''}`}
+            onClick={() => setIsMobileMenuOpen(false)}
+            style={{ color: '#0284c7', fontWeight: 700 }}
+          >
+            Admin Panel
           </Link>
           <Link 
             to="/stories" 

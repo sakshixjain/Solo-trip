@@ -45,6 +45,7 @@ export const Footer: React.FC = () => {
             <ul className="footer-links">
               <li><Link to="/trips" className="footer-link">Browse Trips</Link></li>
               <li><Link to="/destinations" className="footer-link">Popular Destinations</Link></li>
+              <li><Link to="/gallery" className="footer-link">Traveler Gallery</Link></li>
               <li><Link to="/stories" className="footer-link">Travel Stories</Link></li>
               <li><Link to="/community" className="footer-link">Community Discussions</Link></li>
               <li><Link to="/wishlist" className="footer-link">Saved Wishlist</Link></li>
@@ -56,10 +57,10 @@ export const Footer: React.FC = () => {
             <h4 className="footer-col-title">Solo Travel</h4>
             <ul className="footer-links">
               <li><Link to="/about" className="footer-link">About Us</Link></li>
-              <li><Link to="/about" className="footer-link">Solo Safety Guide</Link></li>
+              <li><Link to="/gallery" className="footer-link">Photo Gallery</Link></li>
+              <li><Link to="/admin" className="footer-link" style={{ color: '#38bdf8' }}>Admin Console</Link></li>
               <li><Link to="/community" className="footer-link">Find Travel Buddies</Link></li>
-              <li><Link to="/about" className="footer-link">FAQs</Link></li>
-              <li><Link to="/about" className="footer-link">Contact Support</Link></li>
+              <li><Link to="/about" className="footer-link">FAQs & Support</Link></li>
             </ul>
           </div>
 
