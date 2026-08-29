@@ -261,14 +261,16 @@ export const Home: React.FC = () => {
   return (
     <div className="solotrip-home-root">
       {/* =========================================================================
-          1. HERO SECTION (EXACT MATCH TO REFERENCE SCREENSHOT)
+          1. HERO SECTION (IMMERSIVE, BALANCED SCREEN VIEW WITH RICH ANIMATIONS)
           ========================================================================= */}
       <section className="solotrip-hero">
         <div className="solotrip-hero-image-backdrop" />
         <div className="solotrip-hero-gradient-overlay" />
+        <div className="solotrip-hero-glow-orb solotrip-hero-glow-1" />
+        <div className="solotrip-hero-glow-orb solotrip-hero-glow-2" />
 
         <div className="container solotrip-hero-content-wrapper">
-          <div className="solotrip-hero-text-block animate-fade-in">
+          <div className="solotrip-hero-text-block">
             {/* Top Pill Badge */}
             <div className="solotrip-hero-badge">
               <Plane size={14} className="solotrip-badge-plane" />
@@ -326,12 +328,26 @@ export const Home: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Animated Scroll Down Indicator */}
+        <a 
+          href="#popular-destinations" 
+          className="solotrip-hero-scroll-hint"
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById('popular-destinations')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+          aria-label="Scroll to destinations"
+        >
+          <span className="solotrip-scroll-text">Explore Destinations</span>
+          <ChevronDown size={18} className="solotrip-scroll-chevron" />
+        </a>
       </section>
 
       {/* =========================================================================
           2. EXPLORE POPULAR DESTINATIONS SECTION (5 FEATURED CARDS)
           ========================================================================= */}
-      <section className="solotrip-section">
+      <section className="solotrip-section" id="popular-destinations">
         <div className="container">
           <div className="solotrip-section-header">
             <div className="solotrip-section-title-wrap">
