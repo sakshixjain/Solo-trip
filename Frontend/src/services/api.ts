@@ -42,7 +42,7 @@ export interface Destination {
   address?: string;
   latitude?: number;
   longitude?: number;
-  category: 'Mountains' | 'Beach' | 'Culture' | 'Adventure' | 'Wildlife' | 'Wellness';
+  category: 'Mountains' | 'Beach' | 'Culture' | 'Adventure' | 'Wildlife' | 'Wellness' | 'Heritage' | 'Nature' | 'Spiritual' | 'Offbeat';
   tags: string[];
   rating: number;
   reviewsCount: number;

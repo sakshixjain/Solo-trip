@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 import { AuthProvider } from './context/AuthContext';
 import { WishlistProvider } from './context/WishlistContext';
@@ -23,36 +23,45 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 
+function AppContent() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  return (
+    <div className={`app-container ${isAdminRoute ? 'admin-mode' : ''}`}>
+      {!isAdminRoute && <Navbar />}
+      <main className={`main-content ${isAdminRoute ? 'admin-main-content' : ''}`}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/trips" element={<TripsPage />} />
+          <Route path="/trips/:id" element={<TripDetailPage />} />
+          <Route path="/destinations" element={<DestinationsPage />} />
+          <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/login" element={<AdminPage />} />
+          <Route path="/stories" element={<StoriesPage />} />
+          <Route path="/community" element={<CommunityPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/my-bookings" element={<MyBookingsPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </main>
+      {!isAdminRoute && <Footer />}
+      <AuthModal />
+      <ToastContainer />
+    </div>
+  );
+}
+
 function App() {
   return (
     <AuthProvider>
       <WishlistProvider>
         <BrowserRouter>
-          <div className="app-container">
-            <Navbar />
-            <main className="main-content">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/trips" element={<TripsPage />} />
-                <Route path="/trips/:id" element={<TripDetailPage />} />
-                <Route path="/destinations" element={<DestinationsPage />} />
-                <Route path="/destinations/:id" element={<TripDetailPage />} />
-                <Route path="/gallery" element={<GalleryPage />} />
-                <Route path="/admin" element={<AdminPage />} />
-                <Route path="/stories" element={<StoriesPage />} />
-                <Route path="/community" element={<CommunityPage />} />
-                <Route path="/wishlist" element={<WishlistPage />} />
-                <Route path="/my-bookings" element={<MyBookingsPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-              </Routes>
-            </main>
-            <Footer />
-            <AuthModal />
-            <ToastContainer />
-          </div>
+          <AppContent />
         </BrowserRouter>
       </WishlistProvider>
     </AuthProvider>

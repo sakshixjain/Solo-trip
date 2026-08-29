@@ -1,3 +1,4 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Star, Users, MapPin, Calendar } from 'lucide-react';
 import type { Destination } from '../services/api';
@@ -26,48 +27,57 @@ export const TripCard: React.FC<TripCardProps> = ({ trip }) => {
           src={trip.image} 
           alt={trip.name} 
           className="trip-card-img" 
-          loading="lazy"
+          loading="lazy" 
         />
+        <div className="trip-card-img-overlay" />
         
-        {/* Category & Group Origin Tag */}
-        <div style={{ position: 'absolute', top: 10, left: 10, display: 'flex', flexDirection: 'column', gap: 6, zIndex: 2 }}>
-          <span className="trip-card-badge">
-            {trip.category}
-          </span>
-          {groupInfo && (
-            <span 
-              className="trip-card-badge" 
-              style={{ background: 'rgba(15, 23, 42, 0.88)', color: '#38bdf8', display: 'inline-flex', alignItems: 'center', gap: 4 }}
-            >
-              <MapPin size={11} /> From {groupInfo.originCity}
+        {/* Top-Left Badges Strip */}
+        <div className="trip-card-badges-container">
+          {trip.category && (
+            <span className="trip-card-badge-category">
+              {trip.category}
+            </span>
+          )}
+          {groupInfo && groupInfo.originCity && (
+            <span className="trip-card-badge-origin">
+              <MapPin size={11} className="trip-origin-pin-icon" />
+              <span>From {groupInfo.originCity}</span>
             </span>
           )}
         </div>
 
+        {/* Top-Right Heart Wishlist Button */}
         <button 
-          className={`destination-card-wishlist ${isFavorited ? 'active' : ''}`}
-          style={{ top: 10, right: 10 }}
+          type="button"
+          className={`trip-card-wishlist-btn ${isFavorited ? 'active' : ''}`}
           onClick={(e) => {
             e.stopPropagation();
             toggleWishlist(trip);
           }}
+          aria-label={isFavorited ? 'Remove from wishlist' : 'Save to wishlist'}
           title={isFavorited ? 'Remove from wishlist' : 'Save to wishlist'}
         >
-          <Heart size={15} fill={isFavorited ? '#f43f5e' : 'none'} stroke={isFavorited ? '#f43f5e' : '#ffffff'} />
+          <Heart 
+            size={15} 
+            fill={isFavorited ? '#ef4444' : 'none'} 
+            color={isFavorited ? '#ef4444' : '#64748b'} 
+          />
         </button>
       </div>
 
       <div className="trip-card-body">
-        <h3 className="trip-card-title">{trip.name}</h3>
+        <div className="trip-card-header-row">
+          <h3 className="trip-card-title">{trip.name}</h3>
+        </div>
         <p className="trip-card-meta">
           {trip.days} Days · {trip.state || trip.country}
         </p>
 
-        {/* Group Info Strip (if available) */}
+        {/* Group Info Snippet */}
         {groupInfo && (
           <div className="trip-group-snippet">
             <div className="trip-group-name">
-              <Users size={12} color="#0284c7" />
+              <Users size={13} color="#059669" />
               <span>{groupInfo.groupName}</span>
             </div>
             <div className="trip-group-meta-row">
@@ -86,12 +96,12 @@ export const TripCard: React.FC<TripCardProps> = ({ trip }) => {
         <div className="trip-card-footer">
           <div className="trip-price-wrap">
             <span className="trip-price-val">₹{trip.price.toLocaleString('en-IN')}</span>
-            <span style={{ fontSize: '0.75rem', color: '#64748b', marginLeft: 4 }}>/ person</span>
+            <span className="trip-price-label">/ person</span>
           </div>
 
           <div className="trip-rating-badge">
-            <Star size={13} fill="#d97706" stroke="#d97706" />
-            <span>{trip.rating.toFixed(1)}</span>
+            <Star size={12} fill="#eab308" color="#eab308" />
+            <span>{trip.rating ? trip.rating.toFixed(1) : '4.8'}</span>
           </div>
         </div>
       </div>

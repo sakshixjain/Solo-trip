@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
-  Compass,
-  Search, 
+  Compass, 
   Heart, 
   LogOut, 
   Menu, 
   X, 
   CalendarCheck, 
-  Plane,
+  User as UserIcon,
+  Sun,
+  Moon,
   ChevronDown
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -18,17 +19,33 @@ interface NavbarProps {
   onOpenSearch?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
+export const Navbar: React.FC<NavbarProps> = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout, openAuthModal } = useAuth();
   const { wishlistIds, bookings } = useWishlist();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // Theme state (Light/Dark toggle)
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    return localStorage.getItem('solotrip_theme') === 'dark';
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark-theme');
+      localStorage.setItem('solotrip_theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-theme');
+      localStorage.setItem('solotrip_theme', 'light');
+    }
+  }, [isDarkMode]);
 
   const isActive = (path: string) => {
     if (path === '/' && location.pathname === '/') return true;
     if (path !== '/' && location.pathname.startsWith(path)) return true;
+    if (path === '/destinations' && location.pathname === '/explore') return true;
     return false;
   };
 
@@ -37,94 +54,66 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
       <div className="container navbar">
         {/* Brand Logo */}
         <Link to="/" className="nav-brand">
-          <span className="brand-icon">
-            <Plane size={18} />
-          </span>
-          <span>SoloTrip</span>
+          <img src="/solotrip-logo.png" alt="SoloTrip Logo" className="brand-logo-img" />
+          <span className="brand-title">SoloTrip</span>
         </Link>
 
-        {/* Desktop Navigation Links */}
-        <nav className="nav-links">
-          <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`}>
+        {/* Center Desktop Navigation Links */}
+        <nav className="nav-links-center">
+          <Link to="/" className={`nav-link-item ${isActive('/') ? 'active' : ''}`}>
             Home
+            {isActive('/') && <span className="nav-indicator-bar" />}
           </Link>
-          <Link to="/trips" className={`nav-link ${isActive('/trips') ? 'active' : ''}`}>
+          <Link to="/destinations" className={`nav-link-item ${isActive('/destinations') ? 'active' : ''}`}>
+            Explore
+            {isActive('/destinations') && <span className="nav-indicator-bar" />}
+          </Link>
+          <Link to="/trips" className={`nav-link-item ${isActive('/trips') ? 'active' : ''}`}>
             Trips
+            {isActive('/trips') && <span className="nav-indicator-bar" />}
           </Link>
-          <Link to="/destinations" className={`nav-link ${isActive('/destinations') ? 'active' : ''}`}>
-            Destinations
+          <Link to="/wishlist" className={`nav-link-item ${isActive('/wishlist') ? 'active' : ''}`}>
+            Favorites
+            {wishlistIds.length > 0 && <span className="nav-fav-dot">{wishlistIds.length}</span>}
+            {isActive('/wishlist') && <span className="nav-indicator-bar" />}
           </Link>
-          <Link to="/gallery" className={`nav-link ${isActive('/gallery') ? 'active' : ''}`}>
-            Gallery
-          </Link>
-          <Link to="/stories" className={`nav-link ${isActive('/stories') ? 'active' : ''}`}>
-            Stories
-          </Link>
-          <Link to="/community" className={`nav-link ${isActive('/community') ? 'active' : ''}`}>
-            Community
-          </Link>
-          <Link to="/about" className={`nav-link ${isActive('/about') ? 'active' : ''}`}>
+          <Link to="/about" className={`nav-link-item ${isActive('/about') ? 'active' : ''}`}>
             About Us
-          </Link>
-          <Link 
-            to="/admin" 
-            className={`nav-link ${isActive('/admin') ? 'active' : ''}`}
-            style={{ color: '#0284c7', fontWeight: 700 }}
-          >
-            Admin Panel
+            {isActive('/about') && <span className="nav-indicator-bar" />}
           </Link>
         </nav>
 
         {/* Right Actions */}
-        <div className="nav-actions">
-          {/* Quick Search Button */}
-          <button 
-            className="nav-icon-btn" 
-            title="Search destinations"
-            onClick={() => onOpenSearch ? onOpenSearch() : navigate('/trips')}
-          >
-            <Search size={18} />
-          </button>
+        <div className="nav-actions-right">
+          {/* Light / Dark Mode Toggle Pill */}
+          <div className="theme-toggle-pill" onClick={() => setIsDarkMode(!isDarkMode)} title="Toggle Color Theme">
+            <button type="button" className={`theme-toggle-btn ${!isDarkMode ? 'active' : ''}`} aria-label="Light Mode">
+              <Sun size={14} />
+            </button>
+            <button type="button" className={`theme-toggle-btn ${isDarkMode ? 'active' : ''}`} aria-label="Dark Mode">
+              <Moon size={14} />
+            </button>
+          </div>
 
-          {/* Wishlist Button */}
-          <Link to="/wishlist" className="nav-icon-btn" title="Saved Trips & Wishlist">
-            <Heart size={18} />
-            {wishlistIds.length > 0 && (
-              <span className="nav-badge">{wishlistIds.length}</span>
-            )}
-          </Link>
-
-          {/* Bookings shortcut if authenticated */}
-          {isAuthenticated && (
-            <Link to="/my-bookings" className="nav-icon-btn" title="My Bookings">
-              <CalendarCheck size={18} />
-              {bookings.length > 0 && (
-                <span className="nav-badge" style={{ background: '#0284c7' }}>
-                  {bookings.length}
-                </span>
-              )}
-            </Link>
-          )}
-
-          {/* Auth State */}
+          {/* Auth State Button */}
           {isAuthenticated && user ? (
             <div className="user-menu-wrapper">
               <button 
-                className="user-avatar-btn" 
+                className="user-pill-btn" 
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
               >
-                <div className="user-avatar-circle">
+                <div className="user-avatar-circle-sm">
                   {user.name.charAt(0).toUpperCase()}
                 </div>
-                <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0f172a' }}>
+                <span style={{ fontSize: '0.88rem', fontWeight: 600 }}>
                   {user.name.split(' ')[0]}
                 </span>
-                <ChevronDown size={14} color="#64748b" />
+                <ChevronDown size={14} color="#94a3b8" />
               </button>
 
               {isUserMenuOpen && (
                 <div className="user-menu-dropdown animate-scale-up" onClick={() => setIsUserMenuOpen(false)}>
-                  <div style={{ padding: '8px 12px 12px' }}>
+                  <div style={{ padding: '10px 14px' }}>
                     <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#0f172a' }}>
                       {user.name}
                     </div>
@@ -133,20 +122,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                     </div>
                   </div>
                   <div className="user-menu-divider" />
-                  <Link to="/admin" className="user-menu-item" style={{ color: '#0284c7', fontWeight: 700 }}>
-                    <Compass size={16} /> Admin Console
-                  </Link>
-                  <Link to="/gallery" className="user-menu-item">
-                    <Compass size={16} /> Traveler Gallery
-                  </Link>
                   <Link to="/wishlist" className="user-menu-item">
-                    <Heart size={16} /> My Wishlist ({wishlistIds.length})
+                    <Heart size={15} /> Saved Favorites ({wishlistIds.length})
                   </Link>
                   <Link to="/my-bookings" className="user-menu-item">
-                    <CalendarCheck size={16} /> My Booked Trips ({bookings.length})
+                    <CalendarCheck size={15} /> My Booked Trips ({bookings.length})
                   </Link>
-                  <Link to="/stories" className="user-menu-item">
-                    <Compass size={16} /> My Stories
+                  <Link to="/gallery" className="user-menu-item">
+                    <Compass size={15} /> Traveler Gallery
                   </Link>
                   <div className="user-menu-divider" />
                   <button 
@@ -157,129 +140,83 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                       navigate('/');
                     }}
                   >
-                    <LogOut size={16} /> Sign Out
+                    <LogOut size={15} /> Sign Out
                   </button>
                 </div>
               )}
             </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <button 
-                className="btn btn-outline btn-sm"
-                onClick={() => openAuthModal('login')}
-              >
-                Login
-              </button>
-              <button 
-                className="btn btn-primary btn-sm"
-                onClick={() => openAuthModal('register')}
-              >
-                Sign Up
-              </button>
-            </div>
+            <button 
+              className="login-pill-btn"
+              onClick={() => openAuthModal('login')}
+            >
+              <UserIcon size={16} />
+              <span>Login</span>
+            </button>
           )}
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Hamburger Toggle */}
           <button 
-            className="nav-icon-btn mobile-menu-btn"
+            className="mobile-menu-toggle-btn"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle Navigation"
           >
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
-        <div 
-          style={{ 
-            background: '#ffffff', 
-            borderTop: '1px solid #e2e8f0', 
-            padding: '20px 24px', 
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: 14 
-          }}
-          className="animate-fade-in"
-        >
+        <div className="mobile-drawer-menu animate-fade-in">
           <Link 
             to="/" 
-            className={`nav-link ${isActive('/') ? 'active' : ''}`}
+            className={`mobile-nav-link ${isActive('/') ? 'active' : ''}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Home
           </Link>
           <Link 
+            to="/destinations" 
+            className={`mobile-nav-link ${isActive('/destinations') ? 'active' : ''}`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Explore
+          </Link>
+          <Link 
             to="/trips" 
-            className={`nav-link ${isActive('/trips') ? 'active' : ''}`}
+            className={`mobile-nav-link ${isActive('/trips') ? 'active' : ''}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Trips
           </Link>
           <Link 
-            to="/destinations" 
-            className={`nav-link ${isActive('/destinations') ? 'active' : ''}`}
+            to="/wishlist" 
+            className={`mobile-nav-link ${isActive('/wishlist') ? 'active' : ''}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            Destinations
-          </Link>
-          <Link 
-            to="/gallery" 
-            className={`nav-link ${isActive('/gallery') ? 'active' : ''}`}
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Traveler Gallery
-          </Link>
-          <Link 
-            to="/admin" 
-            className={`nav-link ${isActive('/admin') ? 'active' : ''}`}
-            onClick={() => setIsMobileMenuOpen(false)}
-            style={{ color: '#0284c7', fontWeight: 700 }}
-          >
-            Admin Panel
-          </Link>
-          <Link 
-            to="/stories" 
-            className={`nav-link ${isActive('/stories') ? 'active' : ''}`}
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Stories
-          </Link>
-          <Link 
-            to="/community" 
-            className={`nav-link ${isActive('/community') ? 'active' : ''}`}
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Community
+            Favorites ({wishlistIds.length})
           </Link>
           <Link 
             to="/about" 
-            className={`nav-link ${isActive('/about') ? 'active' : ''}`}
+            className={`mobile-nav-link ${isActive('/about') ? 'active' : ''}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             About Us
           </Link>
+          
           {!isAuthenticated && (
-            <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
+            <div style={{ marginTop: 12 }}>
               <button 
-                className="btn btn-outline" 
-                style={{ flex: 1 }}
+                className="login-pill-btn" 
+                style={{ width: '100%', justifyContent: 'center' }}
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   openAuthModal('login');
                 }}
               >
-                Login
-              </button>
-              <button 
-                className="btn btn-primary" 
-                style={{ flex: 1 }}
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  openAuthModal('register');
-                }}
-              >
-                Sign Up
+                <UserIcon size={16} />
+                <span>Login / Sign Up</span>
               </button>
             </div>
           )}

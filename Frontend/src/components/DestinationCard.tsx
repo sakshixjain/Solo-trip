@@ -44,15 +44,18 @@ export const DestinationCard: React.FC<DestinationCardProps> = ({ destination, u
         {groupInfo && (
           <div 
             style={{ 
-              background: 'rgba(15, 23, 42, 0.85)', 
+              background: 'rgba(15, 23, 42, 0.88)', 
+              backdropFilter: 'blur(4px)',
               color: '#38bdf8', 
               fontSize: '0.72rem', 
               fontWeight: 700, 
               padding: '3px 8px', 
-              borderRadius: 'var(--radius-sm)',
+              borderRadius: '999px',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 4
+              gap: 4,
+              whiteSpace: 'nowrap'
             }}
           >
             <Users size={11} /> Group: {groupInfo.originCity}

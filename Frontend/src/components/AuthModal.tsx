@@ -75,6 +75,12 @@ export const AuthModal: React.FC = () => {
           <X size={20} />
         </button>
 
+        {/* Brand Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+          <img src="/solotrip-logo.png" alt="SoloTrip" style={{ height: 36, width: 'auto', objectFit: 'contain' }} />
+          <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#064e3b' }}>SoloTrip</span>
+        </div>
+
         {/* Tab Headers */}
         <div style={{ display: 'flex', gap: 12, marginBottom: 24, borderBottom: '1px solid #e2e8f0', paddingBottom: 12 }}>
           <button

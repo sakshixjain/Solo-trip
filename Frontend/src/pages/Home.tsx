@@ -1,45 +1,187 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
+  Heart, 
+  Star, 
+  Map as MapIcon, 
+  CheckCircle2, 
+  ChevronLeft, 
+  ChevronRight, 
   Compass, 
-  ArrowRight, 
-  Users, 
-  Smile, 
-  Camera, 
-  MessageSquare,
-  ThumbsUp,
+  Mountain, 
+  Palmtree, 
+  Landmark, 
+  Trees, 
+  Flower2, 
+  Navigation, 
+  Home as HomeIcon, 
+  Edit3, 
+  ShieldCheck, 
+  Plane,
+  Users,
+  Camera,
   MapPin,
-  Map as MapIcon,
-  ShieldCheck,
-  CheckCircle2,
   Sparkles,
-  DollarSign,
-  Navigation,
   BookOpen,
-  Route,
   ChevronDown,
   XCircle,
-  Award,
-  Heart
+  ExternalLink
 } from 'lucide-react';
 import { SearchWidget } from '../components/SearchWidget';
-import { DestinationCard } from '../components/DestinationCard';
 import { TripCard } from '../components/TripCard';
-import { GoogleMapView } from '../components/GoogleMapView';
 import { StoryModal } from '../components/StoryModal';
 import { DiscussionModal } from '../components/DiscussionModal';
-import type { Destination, Story, Discussion, GalleryPhoto } from '../services/api';
+import { InteractiveRouteMap, type RouteCircuit } from '../components/InteractiveRouteMap';
+import { useWishlist } from '../context/WishlistContext';
 import { 
   fetchDestinations, 
-  fetchGalleryPhotos,
+  fetchGalleryPhotos, 
   likeGalleryPhoto,
-  INITIAL_DESTINATIONS, 
-  INITIAL_STORIES, 
+  type Destination, 
+  type Story, 
+  type Discussion, 
+  type GalleryPhoto,
+  INITIAL_DESTINATIONS,
+  INITIAL_STORIES,
   INITIAL_DISCUSSIONS,
   INITIAL_GALLERY_PHOTOS
 } from '../services/api';
 
+// Circuits for the Interactive Map Planner with real GPS coordinates & highway route waypoints
+const ROUTE_CIRCUITS: RouteCircuit[] = [
+  {
+    id: 'rajasthan',
+    title: 'Rajasthan Royal Route',
+    totalKm: '940 km',
+    totalDuration: '15.5 hrs',
+    googleMapsUrl: 'https://www.google.com/maps/dir/Delhi/Jaipur/Jodhpur/Udaipur',
+    waypoints: [
+      { name: 'Delhi', note: 'Start Point (Origin Hub)', type: 'start', lat: 28.6139, lng: 77.2090 },
+      { name: 'Jaipur', note: '~ 280 km • 5 hrs', type: 'stop', lat: 26.9124, lng: 75.7873 },
+      { name: 'Jodhpur', note: '~ 260 km • 4.5 hrs', type: 'stop', lat: 26.2389, lng: 73.0243 },
+      { name: 'Udaipur', note: '~ 400 km • 6 hrs', type: 'stop', lat: 24.5854, lng: 73.7125 }
+    ],
+    routeCoords: [
+      [28.6139, 77.2090],
+      [28.4595, 77.0266],
+      [27.9942, 76.3813],
+      [27.7088, 76.2023],
+      [27.1752, 75.9525],
+      [26.9124, 75.7873],
+      [26.7580, 75.4020],
+      [26.4499, 74.6399],
+      [26.0743, 73.8820],
+      [26.2389, 73.0243],
+      [25.7711, 73.3234],
+      [25.1166, 73.5350],
+      [24.5854, 73.7125]
+    ]
+  },
+  {
+    id: 'himachal',
+    title: 'Himachal Mountain Circuit',
+    totalKm: '545 km',
+    totalDuration: '13 hrs',
+    googleMapsUrl: 'https://www.google.com/maps/dir/Delhi/Chandigarh/Kasol/Manali',
+    waypoints: [
+      { name: 'Delhi', note: 'Start Point (Origin Hub)', type: 'start', lat: 28.6139, lng: 77.2090 },
+      { name: 'Chandigarh', note: '~ 240 km • 4 hrs', type: 'stop', lat: 30.7333, lng: 76.7794 },
+      { name: 'Kasol', note: '~ 230 km • 6.5 hrs', type: 'stop', lat: 32.0100, lng: 77.3150 },
+      { name: 'Manali', note: '~ 75 km • 2.5 hrs', type: 'stop', lat: 32.2432, lng: 77.1892 }
+    ],
+    routeCoords: [
+      [28.6139, 77.2090],
+      [29.3909, 76.9635],
+      [29.9695, 76.8783],
+      [30.3782, 76.7767],
+      [30.7333, 76.7794],
+      [31.1048, 77.1734],
+      [31.3260, 76.7640],
+      [31.5892, 76.9182],
+      [31.7084, 76.9320],
+      [31.9579, 77.1095],
+      [32.0100, 77.3150],
+      [32.2432, 77.1892]
+    ]
+  },
+  {
+    id: 'goa',
+    title: 'Goa & Coastal Karnataka',
+    totalKm: '745 km',
+    totalDuration: '15.5 hrs',
+    googleMapsUrl: 'https://www.google.com/maps/dir/Mumbai/North+Goa/South+Goa/Gokarna',
+    waypoints: [
+      { name: 'Mumbai', note: 'Start Point (Origin Hub)', type: 'start', lat: 19.0760, lng: 72.8777 },
+      { name: 'North Goa', note: '~ 580 km • 11 hrs', type: 'stop', lat: 15.5439, lng: 73.7553 },
+      { name: 'South Goa', note: '~ 45 km • 1.5 hrs', type: 'stop', lat: 15.0100, lng: 74.0232 },
+      { name: 'Gokarna', note: '~ 120 km • 3 hrs', type: 'stop', lat: 14.5479, lng: 74.3188 }
+    ],
+    routeCoords: [
+      [19.0760, 72.8777],
+      [18.5204, 73.8567],
+      [17.6805, 74.0183],
+      [16.7050, 74.2433],
+      [15.8647, 74.5089],
+      [15.5439, 73.7553],
+      [15.2736, 73.9580],
+      [15.0100, 74.0232],
+      [14.8150, 74.1300],
+      [14.5479, 74.3188]
+    ]
+  }
+];
+
+// 6 Categories matching the reference screenshot
+const CATEGORIES = [
+  { id: 'adventure', title: 'Adventure', icon: Mountain, color: '#059669', bgColor: '#ecfdf5' },
+  { id: 'beach', title: 'Beach', icon: Palmtree, color: '#d97706', bgColor: '#fffbeb' },
+  { id: 'heritage', title: 'Heritage', icon: Landmark, color: '#7c3aed', bgColor: '#f5f3ff' },
+  { id: 'nature', title: 'Nature', icon: Trees, color: '#16a34a', bgColor: '#f0fdf4' },
+  { id: 'spiritual', title: 'Spiritual', icon: Flower2, color: '#e11d48', bgColor: '#fff1f2' },
+  { id: 'offbeat', title: 'Offbeat', icon: Navigation, color: '#0284c7', bgColor: '#f0f9ff' }
+];
+
+// Why SoloTrip 4 Features
+const WHY_SOLOTRIP_FEATURES = [
+  { id: 1, title: 'Discover', desc: 'Find amazing places curated for solo travelers.', icon: HomeIcon, iconColor: '#059669', bgColor: '#ecfdf5' },
+  { id: 2, title: 'Plan', desc: 'Plan your trip, the way you want.', icon: Edit3, iconColor: '#d97706', bgColor: '#fffbeb' },
+  { id: 3, title: 'Save', desc: 'Save your favorite places and trips.', icon: Heart, iconColor: '#e11d48', bgColor: '#fff1f2' },
+  { id: 4, title: 'Review', desc: 'Share your experience and help others.', icon: Star, iconColor: '#0284c7', bgColor: '#f0f9ff' }
+];
+
+// Testimonials
+const TESTIMONIALS = [
+  {
+    id: 1,
+    name: 'Ananya Sharma',
+    city: 'From Delhi',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80',
+    quote: '"SoloTrip helped me plan my first solo trip to Manali. Everything was so easy!"',
+    rating: 5
+  },
+  {
+    id: 2,
+    name: 'Rohan Verma',
+    city: 'From Mumbai',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=160&q=80',
+    quote: '"The routes and place suggestions are perfect. Highly recommended!"',
+    rating: 5
+  },
+  {
+    id: 3,
+    name: 'Megha Iyer',
+    city: 'From Bangalore',
+    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=160&q=80',
+    quote: '"I found so many offbeat places that are not crowded. Loved it!"',
+    rating: 5
+  }
+];
+
 export const Home: React.FC = () => {
+  const navigate = useNavigate();
+  const { isInWishlist, toggleWishlist, showToast } = useWishlist();
+
+  // Dynamic Data States
   const [destinations, setDestinations] = useState<Destination[]>(INITIAL_DESTINATIONS);
   const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhoto[]>(INITIAL_GALLERY_PHOTOS);
   const [stories, setStories] = useState<Story[]>(INITIAL_STORIES);
@@ -51,7 +193,13 @@ export const Home: React.FC = () => {
   const [selectedDiscussion, setSelectedDiscussion] = useState<Discussion | null>(null);
   const [isCreateDiscussionOpen, setIsCreateDiscussionOpen] = useState(false);
 
-  // FAQ Accordion State
+  // Map & Route Planner States
+  const [activeCircuitIdx, setActiveCircuitIdx] = useState(0);
+  const [mapType, setMapType] = useState<'map' | 'satellite'>('map');
+  const [hoveredWaypoint, setHoveredWaypoint] = useState<string | null>(null);
+
+  // Carousel & FAQ
+  const [activeTestimonialIdx, setActiveTestimonialIdx] = useState(0);
   const [activeFaqIndex, setActiveFaqIndex] = useState<number | null>(0);
 
   useEffect(() => {
@@ -63,6 +211,16 @@ export const Home: React.FC = () => {
     });
   }, []);
 
+  const activeCircuit = ROUTE_CIRCUITS[activeCircuitIdx];
+
+  const handlePrevTestimonial = () => {
+    setActiveTestimonialIdx((prev) => (prev > 0 ? prev - 1 : TESTIMONIALS.length - 1));
+  };
+
+  const handleNextTestimonial = () => {
+    setActiveTestimonialIdx((prev) => (prev < TESTIMONIALS.length - 1 ? prev + 1 : 0));
+  };
+
   const toggleFaq = (index: number) => {
     setActiveFaqIndex((prev) => (prev === index ? null : index));
   };
@@ -71,6 +229,10 @@ export const Home: React.FC = () => {
     e.stopPropagation();
     const updated = await likeGalleryPhoto(id);
     setGalleryPhotos(updated);
+  };
+
+  const handleSaveRouteTrip = () => {
+    showToast(`✨ ${activeCircuit.title} saved to your Saved Wishlist!`, 'success');
   };
 
   const faqs = [
@@ -97,334 +259,360 @@ export const Home: React.FC = () => {
   ];
 
   return (
-    <div>
-      {/* 1. Hero Section */}
-      <section className="hero-section">
-        <div className="hero-background" />
-        <div className="hero-overlay" />
-        
-        <div className="container" style={{ width: '100%' }}>
-          <div className="hero-content animate-fade-in">
-            <div className="hero-badge">
-              <Compass size={16} /> <span>India's Dedicated Solo Travel Platform</span>
+    <div className="solotrip-home-root">
+      {/* =========================================================================
+          1. HERO SECTION (EXACT MATCH TO REFERENCE SCREENSHOT)
+          ========================================================================= */}
+      <section className="solotrip-hero">
+        <div className="solotrip-hero-image-backdrop" />
+        <div className="solotrip-hero-gradient-overlay" />
+
+        <div className="container solotrip-hero-content-wrapper">
+          <div className="solotrip-hero-text-block animate-fade-in">
+            {/* Top Pill Badge */}
+            <div className="solotrip-hero-badge">
+              <Plane size={14} className="solotrip-badge-plane" />
+              <span>SOLO TRAVEL, ENDLESS POSSIBILITIES</span>
+              <span className="solotrip-badge-arrow">➔</span>
             </div>
-            
-            <h1 className="hero-title">
-              Explore the World.<br />
-              <span>Discover Yourself.</span>
+
+            {/* Main Headline */}
+            <h1 className="solotrip-hero-title">
+              YOUR JOURNEY.<br />
+              <span className="solotrip-highlight-text">YOUR RULES.</span>
             </h1>
-            
-            <p className="hero-subtitle">
-              Your all-in-one ecosystem for independent adventures. Handcrafted solo itineraries, verified safe stays, transparent travel costs, live route estimates, and a community of 50,000+ fearless wanderers.
+
+            {/* Subtitle */}
+            <p className="solotrip-hero-subtitle">
+              Discover places, plan your trips, and create unforgettable memories on your own terms.
             </p>
 
-            {/* Quick Platform Value Badges */}
-            <div className="hero-pills-row">
-              <span className="hero-pill-badge">
-                <ShieldCheck size={14} color="#34d399" /> 100% Vetted Solo Stays
-              </span>
-              <span className="hero-pill-badge">
-                <Navigation size={14} color="#38bdf8" /> Live Route & Distance
-              </span>
-              <span className="hero-pill-badge">
-                <DollarSign size={14} color="#fbbf24" /> Zero Single Penalty
-              </span>
-              <span className="hero-pill-badge">
-                <Users size={14} color="#c084fc" /> 50K+ Co-Wanderers
-              </span>
-            </div>
-
-            {/* Hero Search Box / Widget */}
-            <div className="hero-search-container">
+            {/* Hero Search Box */}
+            <div className="solotrip-hero-search-box">
               <SearchWidget />
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* 2. Platform Overview & Ecosystem Description */}
-      <section className="section" style={{ paddingTop: 30, paddingBottom: 20 }}>
-        <div className="container">
-          <div className="platform-intro-card">
-            <div className="platform-intro-header">
-              <div className="platform-pill-tag">
-                <Sparkles size={14} /> What is SoloTrip?
-              </div>
-              <h2 className="platform-intro-title">
-                Your Complete Ecosystem for Fearless, Authentic Solo Travel
-              </h2>
-              <p className="platform-intro-desc">
-                Solo travel is the ultimate catalyst for personal freedom, self-reliance, and unforgettable life experiences. SoloTrip eliminates the fear of isolation, opaque charges, and unsafe accommodations. We give you vetted stays, transparent pricing, live travel calculations, and a supportive community that always has your back.
-              </p>
-            </div>
-
-            {/* 4 Core Pillars of SoloTrip */}
-            <div className="platform-pillars-grid">
-              {/* Pillar 1 */}
-              <div className="platform-pillar-card">
-                <div className="pillar-icon-box sky">
-                  <Compass size={24} />
+            {/* 3 Sub-Features Below Search */}
+            <div className="solotrip-hero-features-strip">
+              <div className="solotrip-hero-feat-item">
+                <div className="solotrip-hero-feat-icon">
+                  <HomeIcon size={16} />
                 </div>
-                <h3 className="pillar-title">Curated Solo Itineraries</h3>
-                <p className="pillar-text">
-                  Handcrafted day-by-day travel plans designed specifically for solo explorers with realistic pace and cultural depth.
-                </p>
-                <ul className="pillar-features-list">
-                  <li className="pillar-feature-item">
-                    <CheckCircle2 size={14} color="#38bdf8" /> Transparent cost breakdown
-                  </li>
-                  <li className="pillar-feature-item">
-                    <CheckCircle2 size={14} color="#38bdf8" /> Zero single-person surcharges
-                  </li>
-                  <li className="pillar-feature-item">
-                    <CheckCircle2 size={14} color="#38bdf8" /> Best season & packing guides
-                  </li>
-                </ul>
-              </div>
-
-              {/* Pillar 2 */}
-              <div className="platform-pillar-card">
-                <div className="pillar-icon-box emerald">
-                  <ShieldCheck size={24} />
+                <div className="solotrip-hero-feat-text">
+                  <strong>Handpicked</strong>
+                  <span>Best Places</span>
                 </div>
-                <h3 className="pillar-title">100% Vetted Safe Stays</h3>
-                <p className="pillar-text">
-                  Hostels, boutique homestays, and boutique lodges verified with our 25-point solo traveler safety and hygiene checklist.
-                </p>
-                <ul className="pillar-features-list">
-                  <li className="pillar-feature-item">
-                    <CheckCircle2 size={14} color="#34d399" /> Female-friendly verified stays
-                  </li>
-                  <li className="pillar-feature-item">
-                    <CheckCircle2 size={14} color="#34d399" /> 24/7 check-in & secure lockers
-                  </li>
-                  <li className="pillar-feature-item">
-                    <CheckCircle2 size={14} color="#34d399" /> Social common rooms & cafes
-                  </li>
-                </ul>
               </div>
 
-              {/* Pillar 3 */}
-              <div className="platform-pillar-card">
-                <div className="pillar-icon-box amber">
-                  <Navigation size={24} />
+              <div className="solotrip-hero-feat-item">
+                <div className="solotrip-hero-feat-icon">
+                  <ShieldCheck size={16} />
                 </div>
-                <h3 className="pillar-title">Smart Route & Distance</h3>
-                <p className="pillar-text">
-                  Interactive travel calculator providing exact driving distances and transit durations directly from your current location.
-                </p>
-                <ul className="pillar-features-list">
-                  <li className="pillar-feature-item">
-                    <CheckCircle2 size={14} color="#fbbf24" /> Live GPS distance calculation
-                  </li>
-                  <li className="pillar-feature-item">
-                    <CheckCircle2 size={14} color="#fbbf24" /> Mountain & road status alerts
-                  </li>
-                  <li className="pillar-feature-item">
-                    <CheckCircle2 size={14} color="#fbbf24" /> Interactive Google Map explorer
-                  </li>
-                </ul>
-              </div>
-
-              {/* Pillar 4 */}
-              <div className="platform-pillar-card">
-                <div className="pillar-icon-box purple">
-                  <Users size={24} />
+                <div className="solotrip-hero-feat-text">
+                  <strong>Solo Friendly</strong>
+                  <span>Travel Safe</span>
                 </div>
-                <h3 className="pillar-title">Thriving Solo Community</h3>
-                <p className="pillar-text">
-                  Connect with fellow solo wanderers, exchange real-time local advice, find travel buddies for shared legs, and share your stories.
-                </p>
-                <ul className="pillar-features-list">
-                  <li className="pillar-feature-item">
-                    <CheckCircle2 size={14} color="#c084fc" /> Real unfiltered travelogues
-                  </li>
-                  <li className="pillar-feature-item">
-                    <CheckCircle2 size={14} color="#c084fc" /> Destination discussion forums
-                  </li>
-                  <li className="pillar-feature-item">
-                    <CheckCircle2 size={14} color="#c084fc" /> Find verified travel companions
-                  </li>
-                </ul>
               </div>
-            </div>
-          </div>
 
-          {/* Stats Impact Banner */}
-          <div className="stats-banner">
-            <div className="stat-item">
-              <div className="stat-icon-wrapper" style={{ background: '#e0f2fe', color: '#0284c7' }}>
-                <Users size={26} />
-              </div>
-              <div>
-                <div className="stat-number">50,000+</div>
-                <div className="stat-label">Solo Travelers Empowered</div>
-              </div>
-            </div>
-
-            <div className="stat-item">
-              <div className="stat-icon-wrapper" style={{ background: '#ecfdf5', color: '#059669' }}>
-                <MapPin size={26} />
-              </div>
-              <div>
-                <div className="stat-number">120+</div>
-                <div className="stat-label">Handpicked Destinations</div>
-              </div>
-            </div>
-
-            <div className="stat-item">
-              <div className="stat-icon-wrapper" style={{ background: '#fff7ed', color: '#ea580c' }}>
-                <ShieldCheck size={26} />
-              </div>
-              <div>
-                <div className="stat-number">100%</div>
-                <div className="stat-label">Safety Vetted Accommodations</div>
-              </div>
-            </div>
-
-            <div className="stat-item">
-              <div className="stat-icon-wrapper" style={{ background: '#f5f3ff', color: '#7c3aed' }}>
-                <Award size={26} />
-              </div>
-              <div>
-                <div className="stat-number">4.9 / 5.0</div>
-                <div className="stat-label">Community Satisfaction Score</div>
+              <div className="solotrip-hero-feat-item">
+                <div className="solotrip-hero-feat-icon">
+                  <CheckCircle2 size={16} />
+                </div>
+                <div className="solotrip-hero-feat-text">
+                  <strong>Save & Plan</strong>
+                  <span>Your Trips</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. How SoloTrip Works (4-Step Process) */}
-      <section className="section" style={{ background: '#ffffff', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+      {/* =========================================================================
+          2. EXPLORE POPULAR DESTINATIONS SECTION (5 FEATURED CARDS)
+          ========================================================================= */}
+      <section className="solotrip-section">
         <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 16px' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#0284c7', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
-              <Route size={16} /> Seamless Solo Journey
-            </div>
-            <h2 className="section-title">How SoloTrip Works</h2>
-            <p className="section-subtitle">
-              From your initial travel dream to arriving on-ground and making lifelong memories, we streamline every single step.
-            </p>
-          </div>
-
-          <div className="how-it-works-grid">
-            {/* Step 1 */}
-            <div className="how-step-card">
-              <span className="step-num-pill">STEP 01</span>
-              <h3 className="how-step-title">Discover & Calculate</h3>
-              <p className="how-step-desc">
-                Browse curated destinations filtered by budget, vibe (mountains, beaches, heritage), and see live driving & transit travel duration directly from your city.
-              </p>
-              <span className="how-step-tag">
-                <Navigation size={13} /> Live Geo-Calculations
+          <div className="solotrip-section-header">
+            <div className="solotrip-section-title-wrap">
+              <span className="solotrip-section-icon green">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>
+                </svg>
               </span>
+              <h2 className="solotrip-section-heading">Explore Popular Destinations</h2>
             </div>
-
-            {/* Step 2 */}
-            <div className="how-step-card">
-              <span className="step-num-pill">STEP 02</span>
-              <h3 className="how-step-title">Review Real Costs</h3>
-              <p className="how-step-desc">
-                Explore day-by-day itineraries with full itemized cost breakdowns (stay + activities + food estimates) so you never encounter unexpected hidden expenses.
-              </p>
-              <span className="how-step-tag" style={{ background: '#ecfdf5', color: '#059669' }}>
-                <DollarSign size={13} /> Transparent Pricing
-              </span>
-            </div>
-
-            {/* Step 3 */}
-            <div className="how-step-card">
-              <span className="step-num-pill">STEP 03</span>
-              <h3 className="how-step-title">Book with Peace of Mind</h3>
-              <p className="how-step-desc">
-                Reserve vetted solo stays, receive emergency checklists, connect with certified local guides, and manage all your bookings with flexible cancellation.
-              </p>
-              <span className="how-step-tag" style={{ background: '#fef3c7', color: '#d97706' }}>
-                <ShieldCheck size={13} /> Vetted Safety Audit
-              </span>
-            </div>
-
-            {/* Step 4 */}
-            <div className="how-step-card">
-              <span className="step-num-pill">STEP 04</span>
-              <h3 className="how-step-title">Connect & Share</h3>
-              <p className="how-step-desc">
-                Join active community threads, meet solo wanderers at your destination, share your photos and reviews, and inspire the next wave of solo explorers.
-              </p>
-              <span className="how-step-tag" style={{ background: '#f3e8ff', color: '#7e22ce' }}>
-                <Users size={13} /> Global Community
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. Popular Destinations Section */}
-      <section className="section">
-        <div className="container">
-          <div className="section-header">
-            <div>
-              <h2 className="section-title">Popular Solo Destinations</h2>
-              <p className="section-subtitle">Trending spots handpicked for safety, scenic beauty, and vibrant solo culture</p>
-            </div>
-            <Link to="/destinations" className="view-all-link">
-              View All Destinations <ArrowRight size={16} />
+            <Link to="/destinations" className="solotrip-view-all-link">
+              <span>View all destinations</span>
+              <span className="solotrip-arrow">➔</span>
             </Link>
           </div>
 
-          <div className="destinations-grid">
-            {destinations.slice(0, 5).map((dest) => (
-              <DestinationCard key={dest.id} destination={dest} />
+          {/* 5 Destination Cards Row */}
+          <div className="solotrip-destinations-grid">
+            {destinations.slice(0, 5).map((dest) => {
+              const liked = isInWishlist(dest.id);
+              return (
+                <div 
+                  key={dest.id} 
+                  className="solotrip-dest-card"
+                  onClick={() => navigate(`/destinations/${dest.id}`)}
+                >
+                  <img src={dest.image} alt={dest.name} className="solotrip-dest-img" loading="lazy" />
+                  <div className="solotrip-dest-gradient" />
+
+                  {/* Wishlist Heart Button */}
+                  <button 
+                    type="button"
+                    className={`solotrip-dest-heart-btn ${liked ? 'active' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleWishlist(dest);
+                    }}
+                    aria-label="Save to Wishlist"
+                  >
+                    <Heart size={15} fill={liked ? '#ef4444' : 'none'} color={liked ? '#ef4444' : '#ffffff'} />
+                  </button>
+
+                  {/* Card Bottom Meta */}
+                  <div className="solotrip-dest-meta">
+                    <div className="solotrip-dest-rating-badge">
+                      <Star size={11} fill="#eab308" color="#eab308" />
+                      <span>{dest.rating}</span>
+                    </div>
+                    <div className="solotrip-dest-title-group">
+                      <h3 className="solotrip-dest-name">{dest.name}</h3>
+                      <span className="solotrip-dest-state">{dest.state || dest.location}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          3. EXPLORE BY CATEGORY SECTION (6 PASTEL CATEGORY CARDS)
+          ========================================================================= */}
+      <section className="solotrip-section" style={{ paddingTop: 10 }}>
+        <div className="container">
+          <div className="solotrip-section-header">
+            <div className="solotrip-section-title-wrap">
+              <span className="solotrip-section-icon green">
+                <Compass size={22} />
+              </span>
+              <h2 className="solotrip-section-heading">Explore by Category</h2>
+            </div>
+          </div>
+
+          {/* 6 Category Cards Grid */}
+          <div className="solotrip-categories-grid">
+            {CATEGORIES.map((cat) => {
+              const IconComponent = cat.icon;
+              return (
+                <div 
+                  key={cat.id} 
+                  className="solotrip-category-card"
+                  style={{ backgroundColor: cat.bgColor }}
+                  onClick={() => navigate(`/destinations?category=${cat.title}`)}
+                >
+                  <div className="solotrip-cat-icon-wrap" style={{ color: cat.color }}>
+                    <IconComponent size={22} />
+                  </div>
+                  <span className="solotrip-cat-label" style={{ color: '#0f172a' }}>
+                    {cat.title}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          4. PLAN YOUR TRIP SECTION (HIGH QUALITY INTERACTIVE ROUTE MAP)
+          ========================================================================= */}
+      <section className="solotrip-section" style={{ paddingTop: 20 }}>
+        <div className="container">
+          {/* Circuit Switcher Tabs */}
+          <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.84rem', fontWeight: 800, color: '#064e3b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              📍 Popular Circuits:
+            </span>
+            {ROUTE_CIRCUITS.map((circ, idx) => (
+              <button
+                key={circ.id}
+                type="button"
+                className={`solotrip-circuit-pill ${activeCircuitIdx === idx ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveCircuitIdx(idx);
+                  setHoveredWaypoint(null);
+                }}
+              >
+                {circ.title}
+              </button>
             ))}
           </div>
 
-          {/* Interactive Google Map Section */}
-          <div style={{ marginTop: 48, background: '#ffffff', borderRadius: 24, padding: '32px 28px', border: '1px solid #e2e8f0', boxShadow: '0 8px 30px rgba(0,0,0,0.04)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+          <div className="solotrip-route-planner-card">
+            {/* Left Column: Itinerary Details & Waypoints */}
+            <div className="solotrip-route-left-col">
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0284c7', fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
-                  <MapIcon size={16} /> Interactive Map Explorer
+                <div className="solotrip-route-header">
+                  <div className="solotrip-route-icon-box">
+                    <MapIcon size={20} color="#064e3b" />
+                  </div>
+                  <div>
+                    <h3 className="solotrip-route-title">Plan Your Trip</h3>
+                    <p className="solotrip-route-subtitle">
+                      Map your journey, add places, and see the best route for your solo adventure.
+                    </p>
+                  </div>
                 </div>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                  Discover Places by Location & Route
-                </h3>
+
+                {/* Circuit Info Strip */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: '#f8fafc', padding: '8px 12px', borderRadius: 10, border: '1px solid #e2e8f0', marginBottom: 16 }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0f172a' }}>
+                    🛣️ {activeCircuit.totalKm} Total
+                  </span>
+                  <span style={{ color: '#cbd5e1' }}>•</span>
+                  <span style={{ fontSize: '0.8rem', color: '#0284c7', fontWeight: 600 }}>
+                    ⏱️ {activeCircuit.totalDuration} Drive
+                  </span>
+                </div>
+
+                {/* Vertical Waypoint Timeline */}
+                <div className="solotrip-timeline">
+                  {activeCircuit.waypoints.map((wp, wIdx) => (
+                    <div 
+                      key={wIdx} 
+                      className={`solotrip-timeline-item ${hoveredWaypoint === wp.name ? 'highlight' : ''}`}
+                      onMouseEnter={() => setHoveredWaypoint(wp.name)}
+                      onMouseLeave={() => setHoveredWaypoint(null)}
+                    >
+                      <div className={`solotrip-timeline-dot ${wp.type === 'start' ? 'green' : 'red'}`} />
+                      {wIdx < activeCircuit.waypoints.length - 1 && (
+                        <div className="solotrip-timeline-line" />
+                      )}
+                      <div className="solotrip-timeline-content">
+                        <strong className="solotrip-timeline-city">{wp.name}</strong>
+                        <span className="solotrip-timeline-note">{wp.note}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <Link 
-                to="/destinations" 
-                className="btn btn-outline btn-sm"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-              >
-                <MapPin size={14} /> Fullscreen Map View <ArrowRight size={14} />
-              </Link>
+
+              {/* Action Buttons */}
+              <div className="solotrip-route-actions">
+                <a 
+                  href={activeCircuit.googleMapsUrl} 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  className="solotrip-btn-dark"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <Navigation size={15} />
+                  <span>View on Google Maps</span>
+                  <ExternalLink size={12} />
+                </a>
+                
+                <button 
+                  type="button" 
+                  className="solotrip-btn-outline"
+                  onClick={handleSaveRouteTrip}
+                >
+                  <Heart size={15} />
+                  <span>Save Trip</span>
+                </button>
+              </div>
             </div>
 
-            <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-              <GoogleMapView
-                destinations={destinations}
-                height="420px"
-                showControls={true}
+            {/* Right Column: Realistic Interactive Leaflet Route Map */}
+            <div className="solotrip-route-map-col">
+              {/* Map Type Switch Top Left */}
+              <div className="solotrip-map-type-switch">
+                <button 
+                  type="button" 
+                  className={`solotrip-map-tab ${mapType === 'map' ? 'active' : ''}`}
+                  onClick={() => setMapType('map')}
+                >
+                  Map View
+                </button>
+                <button 
+                  type="button" 
+                  className={`solotrip-map-tab ${mapType === 'satellite' ? 'active' : ''}`}
+                  onClick={() => setMapType('satellite')}
+                >
+                  Satellite Terrain
+                </button>
+              </div>
+
+              {/* Real Leaflet Map Component with Live Tiles, Polyline, and Pins */}
+              <InteractiveRouteMap 
+                circuit={activeCircuit}
+                mapType={mapType}
+                hoveredWaypoint={hoveredWaypoint}
+                onSelectWaypoint={(name) => navigate(`/destinations?search=${name}`)}
               />
             </div>
           </div>
         </div>
       </section>
 
-      {/* 4b. Upcoming Group Tours Section (With Defined Departure Origin Cities) */}
-      <section className="section" style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
+      {/* =========================================================================
+          5. WHY SOLOTRIP? SECTION (4 CORE PILLARS)
+          ========================================================================= */}
+      <section className="solotrip-section" style={{ paddingTop: 20 }}>
         <div className="container">
-          <div className="section-header">
+          <div className="solotrip-section-header">
+            <div className="solotrip-section-title-wrap">
+              <span className="solotrip-section-icon green">
+                <CheckCircle2 size={22} />
+              </span>
+              <h2 className="solotrip-section-heading">Why SoloTrip?</h2>
+            </div>
+          </div>
+
+          {/* 4 Feature Cards */}
+          <div className="solotrip-why-grid">
+            {WHY_SOLOTRIP_FEATURES.map((item) => {
+              const IconComp = item.icon;
+              return (
+                <div key={item.id} className="solotrip-why-card">
+                  <div className="solotrip-why-icon-box" style={{ backgroundColor: item.bgColor, color: item.iconColor }}>
+                    <IconComp size={22} />
+                  </div>
+                  <div className="solotrip-why-content">
+                    <h4 className="solotrip-why-title">{item.title}</h4>
+                    <p className="solotrip-why-desc">{item.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          6. UPCOMING GROUP TOURS (FIXED BATCHES WITH DEPARTURE CITIES)
+          ========================================================================= */}
+      <section className="solotrip-section" style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+        <div className="container">
+          <div className="solotrip-section-header">
             <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#0284c7', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#064e3b', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
                 <Users size={15} /> Group Batches & Fixed Departures
               </div>
-              <h2 className="section-title">Upcoming Group Tours</h2>
-              <p className="section-subtitle">
-                Join curated small group batches departing from Delhi, Mumbai, Bangalore & Chandigarh with certified trip captains.
+              <h2 className="solotrip-section-heading" style={{ fontSize: '1.45rem' }}>Upcoming Group Tours</h2>
+              <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '4px 0 0 0' }}>
+                Join curated small group batches departing from Delhi, Mumbai, Bangalore & Chandigarh with certified captains.
               </p>
             </div>
-            <Link to="/trips?style=Group" className="view-all-link">
-              View All Group Batches <ArrowRight size={16} />
+            <Link to="/trips?style=Group" className="solotrip-view-all-link">
+              <span>View All Group Batches</span>
+              <span className="solotrip-arrow">➔</span>
             </Link>
           </div>
 
@@ -436,16 +624,18 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. SoloTrip vs Traditional Tour Operators Comparison */}
-      <section className="section" style={{ background: '#ffffff', borderTop: '1px solid #e2e8f0' }}>
+      {/* =========================================================================
+          7. SOLOTRIP VS TRADITIONAL TOUR OPERATORS COMPARISON
+          ========================================================================= */}
+      <section className="solotrip-section">
         <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 16px' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#0284c7', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
+          <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 28px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#064e3b', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
               <Sparkles size={16} /> The Solo Difference
             </div>
-            <h2 className="section-title">Why Travel Solo With Us?</h2>
-            <p className="section-subtitle">
-              Traditional tour agencies force solo travelers into rigid group compromises and expensive penalties. Here is how SoloTrip rewrites the rules.
+            <h2 className="solotrip-section-heading" style={{ fontSize: '1.6rem' }}>Why Travel Solo With Us?</h2>
+            <p style={{ fontSize: '0.88rem', color: '#64748b', margin: '6px 0 0 0', lineHeight: 1.5 }}>
+              Traditional tour agencies force solo travelers into rigid group compromises and expensive single-room penalties. Here is how SoloTrip rewrites the rules.
             </p>
           </div>
 
@@ -484,19 +674,19 @@ export const Home: React.FC = () => {
               <h3 className="comparison-title">Built 100% For Your Independence</h3>
               <ul className="comparison-list">
                 <li className="comparison-item">
-                  <CheckCircle2 size={18} color="#34d399" style={{ flexShrink: 0, marginTop: 2 }} />
+                  <CheckCircle2 size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: 2 }} />
                   <span><strong>Zero Single-Person Surcharges:</strong> Transparent, direct itemized pricing with fair rates for solo bookings.</span>
                 </li>
                 <li className="comparison-item">
-                  <CheckCircle2 size={18} color="#34d399" style={{ flexShrink: 0, marginTop: 2 }} />
+                  <CheckCircle2 size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: 2 }} />
                   <span><strong>Total Schedule Autonomy:</strong> Wake up when you want, explore hidden cafes, or linger by mountain streams without rushing.</span>
                 </li>
                 <li className="comparison-item">
-                  <CheckCircle2 size={18} color="#34d399" style={{ flexShrink: 0, marginTop: 2 }} />
+                  <CheckCircle2 size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: 2 }} />
                   <span><strong>Vetted Social Stays:</strong> Handpicked boutique hostels and homestays with common lounges, fast WiFi, and certified security.</span>
                 </li>
                 <li className="comparison-item">
-                  <CheckCircle2 size={18} color="#34d399" style={{ flexShrink: 0, marginTop: 2 }} />
+                  <CheckCircle2 size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: 2 }} />
                   <span><strong>Supportive Community & Live GPS:</strong> Real-time route estimates from your city and forums to meet co-travelers when you want company.</span>
                 </li>
               </ul>
@@ -505,95 +695,24 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 6. Why Solo Travel? Core Benefits */}
-      <section className="section" style={{ background: '#ffffff', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+      {/* =========================================================================
+          8. REAL TRAVELER STORIES SNIPPET
+          ========================================================================= */}
+      <section className="solotrip-section" style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: 600, margin: '0 auto 40px' }}>
-            <h2 className="section-title">The Transformative Power of Solo Travel</h2>
-            <p className="section-subtitle">
-              It is not just a journey across geographical maps; it is a profound journey of self-discovery and resilience.
-            </p>
-          </div>
-
-          <div className="features-grid">
-            {/* Feature 1: Freedom */}
-            <div className="feature-card">
-              <div className="feature-icon-badge sky">
-                <Compass size={26} />
-              </div>
-              <h3 className="feature-title">Absolute Freedom</h3>
-              <p className="feature-desc">
-                Go where you want, when you want. Set your own pace, alter your plans spontaneously, and travel with zero compromises.
-              </p>
-            </div>
-
-            {/* Feature 2: Self Discovery */}
-            <div className="feature-card">
-              <div className="feature-icon-badge emerald">
-                <Smile size={26} />
-              </div>
-              <h3 className="feature-title">Self Discovery & Resilience</h3>
-              <p className="feature-desc">
-                Conquer new terrains, solve real-world transit challenges, and discover a profound inner confidence you never knew you had.
-              </p>
-            </div>
-
-            {/* Feature 3: New Connections */}
-            <div className="feature-card">
-              <div className="feature-icon-badge indigo">
-                <Users size={26} />
-              </div>
-              <h3 className="feature-title">Lifelong Connections</h3>
-              <p className="feature-desc">
-                Meet kindred solo wanderers, backpackers, and welcoming locals who turn accidental conversations into lifelong friendships.
-              </p>
-            </div>
-
-            {/* Feature 4: Unforgettable Memories */}
-            <div className="feature-card">
-              <div className="feature-icon-badge orange">
-                <Camera size={26} />
-              </div>
-              <h3 className="feature-title">Unfiltered Stories</h3>
-              <p className="feature-desc">
-                Collect raw, authentic memories, personal photographs, and empowering moments that stay etched in your heart forever.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 7. Share Your Journey Banner */}
-      <div className="container">
-        <div className="share-banner">
-          <div className="share-banner-bg" />
-          <div className="share-banner-overlay" />
-          <div className="share-banner-content">
-            <h2 className="share-banner-title">Share Your Solo Journey</h2>
-            <p className="share-banner-subtitle">
-              Your personal experience, budget breakdown, and travel tips can inspire thousands of solo wanderers taking their very first brave step.
-            </p>
-            <button 
-              className="btn btn-primary"
-              style={{ background: '#ffffff', color: '#0f172a', fontWeight: 700 }}
-              onClick={() => setIsWriteStoryOpen(true)}
-            >
-              Write Your Story
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 8. Travel Stories Snippet */}
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container">
-          <div className="section-header">
+          <div className="solotrip-section-header">
             <div>
-              <h2 className="section-title">Real Solo Travel Stories</h2>
-              <p className="section-subtitle">Unfiltered perspectives, budgeting secrets, and guides written by real solo explorers</p>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#064e3b', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
+                <BookOpen size={15} /> Real Solo Travelogues
+              </div>
+              <h2 className="solotrip-section-heading" style={{ fontSize: '1.45rem' }}>Traveler Stories & Guides</h2>
+              <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '4px 0 0 0' }}>
+                Unfiltered perspectives, budgeting secrets, and guides written by real solo explorers.
+              </p>
             </div>
-            <Link to="/stories" className="view-all-link">
-              Read All Stories <ArrowRight size={16} />
+            <Link to="/stories" className="solotrip-view-all-link">
+              <span>Read All Stories</span>
+              <span className="solotrip-arrow">➔</span>
             </Link>
           </div>
 
@@ -603,6 +722,7 @@ export const Home: React.FC = () => {
                 key={story.id} 
                 className="story-card"
                 onClick={() => setSelectedStory(story)}
+                style={{ cursor: 'pointer' }}
               >
                 <div className="story-card-img-wrap">
                   <img src={story.coverImage} alt={story.title} className="story-card-img" loading="lazy" />
@@ -611,10 +731,10 @@ export const Home: React.FC = () => {
                       position: 'absolute',
                       top: 12,
                       left: 12,
-                      background: 'rgba(15, 23, 42, 0.75)',
+                      background: 'rgba(15, 23, 42, 0.8)',
                       color: 'white',
                       fontSize: '0.75rem',
-                      fontWeight: 600,
+                      fontWeight: 700,
                       padding: '3px 10px',
                       borderRadius: 999
                     }}
@@ -638,27 +758,30 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 8b. Real Traveler Photo Gallery Showcase */}
-      <section className="section" style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
+      {/* =========================================================================
+          9. TRAVELER PHOTO GALLERY SHOWCASE
+          ========================================================================= */}
+      <section className="solotrip-section">
         <div className="container">
-          <div className="section-header">
+          <div className="solotrip-section-header">
             <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#0284c7', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#064e3b', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
                 <Camera size={15} /> Real Wanderers Community Feed
               </div>
-              <h2 className="section-title">Travelers Photo Gallery</h2>
-              <p className="section-subtitle">
-                Live moments, summits conquered, and group laughter posted by solo travelers and group batches.
+              <h2 className="solotrip-section-heading" style={{ fontSize: '1.45rem' }}>Travelers Photo Gallery</h2>
+              <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '4px 0 0 0' }}>
+                Live moments, mountain summits, and group memories posted by solo travelers and group batches.
               </p>
             </div>
-            <Link to="/gallery" className="view-all-link">
-              Explore Full Gallery ({galleryPhotos.length}+) <ArrowRight size={16} />
+            <Link to="/gallery" className="solotrip-view-all-link">
+              <span>Explore Full Gallery ({galleryPhotos.length}+)</span>
+              <span className="solotrip-arrow">➔</span>
             </Link>
           </div>
 
           <div className="gallery-grid">
             {galleryPhotos.slice(0, 3).map((photo) => (
-              <div key={photo.id} className="gallery-card" onClick={() => window.location.href = '/gallery'}>
+              <div key={photo.id} className="gallery-card" onClick={() => navigate('/gallery')}>
                 <img src={photo.imageUrl} alt={photo.caption} className="gallery-card-img" loading="lazy" />
                 <div className="gallery-card-overlay" />
                 
@@ -670,6 +793,7 @@ export const Home: React.FC = () => {
                 </div>
 
                 <button 
+                  type="button"
                   className={`gallery-like-btn ${photo.isLiked ? 'liked' : ''}`}
                   onClick={(e) => handleLikePhoto(e, photo.id)}
                 >
@@ -695,15 +819,81 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 9. Interactive Solo Travel FAQ Section */}
-      <section className="section" style={{ background: '#ffffff', borderTop: '1px solid #e2e8f0' }}>
+      {/* =========================================================================
+          10. WHAT TRAVELERS SAY SECTION (TESTIMONIALS CAROUSEL)
+          ========================================================================= */}
+      <section className="solotrip-section" style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#0284c7', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
+          <div className="solotrip-section-header">
+            <div className="solotrip-section-title-wrap">
+              <span className="solotrip-section-icon green">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179zm10 0C13.553 16.227 13 15 13 13.011c0-3.5 2.457-6.637 6.03-8.188l.893 1.378c-3.335 1.804-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 3.226 1.648 3.226 3.489a3.5 3.5 0 01-3.5 3.5c-1.073 0-2.099-.49-2.748-1.179z"/>
+                </svg>
+              </span>
+              <h2 className="solotrip-section-heading">What Travelers Say</h2>
+            </div>
+
+            {/* Carousel Navigation Buttons */}
+            <div className="solotrip-carousel-nav">
+              <button 
+                type="button" 
+                className="solotrip-carousel-arrow-btn" 
+                onClick={handlePrevTestimonial}
+                aria-label="Previous Testimonial"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button 
+                type="button" 
+                className="solotrip-carousel-arrow-btn" 
+                onClick={handleNextTestimonial}
+                aria-label="Next Testimonial"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* Testimonial Cards Grid */}
+          <div className="solotrip-testimonials-grid">
+            {TESTIMONIALS.map((testi, idx) => (
+              <div 
+                key={testi.id} 
+                className={`solotrip-testimonial-card ${activeTestimonialIdx === idx ? 'highlight' : ''}`}
+              >
+                <div className="solotrip-testi-author-row">
+                  <img src={testi.avatar} alt={testi.name} className="solotrip-testi-avatar" />
+                  <div>
+                    <h4 className="solotrip-testi-name">{testi.name}</h4>
+                    <span className="solotrip-testi-city">{testi.city}</span>
+                  </div>
+                </div>
+
+                <p className="solotrip-testi-quote">{testi.quote}</p>
+
+                <div className="solotrip-testi-stars">
+                  {[...Array(testi.rating)].map((_, starIdx) => (
+                    <Star key={starIdx} size={14} fill="#eab308" color="#eab308" />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          11. FREQUENTLY ASKED QUESTIONS (ACCORDION)
+          ========================================================================= */}
+      <section className="solotrip-section">
+        <div className="container">
+          <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 28px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#064e3b', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
               <BookOpen size={16} /> Clear Answers
             </div>
-            <h2 className="section-title">Frequently Asked Questions</h2>
-            <p className="section-subtitle">
+            <h2 className="solotrip-section-heading" style={{ fontSize: '1.6rem' }}>Frequently Asked Questions</h2>
+            <p style={{ fontSize: '0.88rem', color: '#64748b', margin: '4px 0 0 0' }}>
               Everything you need to know about planning, safety, pricing, and community on SoloTrip.
             </p>
           </div>
@@ -715,14 +905,14 @@ export const Home: React.FC = () => {
                 className={`faq-item ${activeFaqIndex === idx ? 'active' : ''}`}
               >
                 <button 
-                  type="button"
+                  type="button" 
                   className="faq-question-btn"
                   onClick={() => toggleFaq(idx)}
                   aria-expanded={activeFaqIndex === idx}
                 >
                   <span className="faq-question-text">{faq.q}</span>
                   <span className="faq-icon-toggle">
-                    <ChevronDown size={20} />
+                    <ChevronDown size={18} />
                   </span>
                 </button>
                 {activeFaqIndex === idx && (
@@ -736,93 +926,33 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 10. Community Section Preview */}
-      <section className="section" style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
-        <div className="container">
-          <div className="section-header">
-            <div>
-              <h2 className="section-title">Solo Traveler Community</h2>
-              <p className="section-subtitle">Ask questions, share advice, and connect with fellow explorers worldwide</p>
-            </div>
-            <div style={{ display: 'flex', gap: 12 }}>
-              <button 
-                className="btn btn-primary btn-sm"
-                onClick={() => setIsCreateDiscussionOpen(true)}
-              >
-                Start a Discussion
-              </button>
-              <Link to="/community" className="btn btn-secondary btn-sm">
-                View All Discussions
-              </Link>
-            </div>
-          </div>
-
-          <div className="discussions-list">
-            {discussions.slice(0, 3).map((disc) => (
-              <div 
-                key={disc.id} 
-                className="discussion-item"
-                onClick={() => setSelectedDiscussion(disc)}
-              >
-                <div className="discussion-left">
-                  <div className="discussion-avatar">
-                    {disc.author.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <h4 className="discussion-title">{disc.title}</h4>
-                    <div className="discussion-meta">
-                      {disc.author.name} · {disc.timeAgo}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="discussion-stats">
-                  <div className="discussion-stat-item">
-                    <MessageSquare size={16} />
-                    <span>{disc.repliesCount}</span>
-                  </div>
-                  <div className="discussion-stat-item">
-                    <ThumbsUp size={16} />
-                    <span>{disc.likesCount}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Modals */}
       <StoryModal 
         story={selectedStory}
         isOpen={!!selectedStory}
         onClose={() => setSelectedStory(null)}
-      />
-
-      <StoryModal 
-        isWriting={true}
-        isOpen={isWriteStoryOpen}
-        onClose={() => setIsWriteStoryOpen(false)}
+        isWriting={isWriteStoryOpen}
         onStoryCreated={(newStory) => {
-          setStories((prev) => [newStory, ...prev]);
+          setStories([newStory, ...stories]);
+          setIsWriteStoryOpen(false);
+          showToast('🎉 Your travel story has been published!', 'success');
         }}
       />
 
       <DiscussionModal
         discussion={selectedDiscussion}
-        isOpen={!!selectedDiscussion}
-        onClose={() => setSelectedDiscussion(null)}
-      />
-
-      <DiscussionModal
-        isCreating={true}
-        isOpen={isCreateDiscussionOpen}
-        onClose={() => setIsCreateDiscussionOpen(false)}
+        isOpen={!!selectedDiscussion || isCreateDiscussionOpen}
+        onClose={() => {
+          setSelectedDiscussion(null);
+          setIsCreateDiscussionOpen(false);
+        }}
+        isCreating={isCreateDiscussionOpen}
         onDiscussionCreated={(newDisc) => {
-          setDiscussions((prev) => [newDisc, ...prev]);
+          setDiscussions([newDisc, ...discussions]);
+          setIsCreateDiscussionOpen(false);
+          showToast('🎉 Discussion thread created!', 'success');
         }}
       />
     </div>
   );
 };
-
