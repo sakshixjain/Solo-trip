@@ -79,25 +79,25 @@ export const BookingModal: React.FC<BookingModalProps> = ({ destination, isOpen,
             </p>
             <div 
               style={{ 
-                background: '#f8fafc', 
+                background: 'var(--bg-subtle)', 
                 borderRadius: 12, 
                 padding: 16, 
                 marginBottom: 24, 
                 textAlign: 'left',
-                border: '1px solid #e2e8f0' 
+                border: '1px solid var(--border-light)' 
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: '0.9rem' }}>
-                <span style={{ color: '#64748b' }}>Trip Duration:</span>
-                <span style={{ fontWeight: 600 }}>{destination.duration}</span>
+                <span style={{ color: 'var(--text-muted)' }}>Trip Duration:</span>
+                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{destination.duration}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: '0.9rem' }}>
-                <span style={{ color: '#64748b' }}>Travelers:</span>
-                <span style={{ fontWeight: 600 }}>{travelers} Person</span>
+                <span style={{ color: 'var(--text-muted)' }}>Travelers:</span>
+                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{travelers} Person</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', fontWeight: 700 }}>
-                <span>Total Amount:</span>
-                <span style={{ color: '#0f172a' }}>₹{totalPrice.toLocaleString('en-IN')}</span>
+                <span style={{ color: 'var(--text-primary)' }}>Total Amount:</span>
+                <span style={{ color: 'var(--primary)' }}>₹{totalPrice.toLocaleString('en-IN')}</span>
               </div>
             </div>
             <button 
@@ -117,14 +117,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({ destination, isOpen,
                 style={{ width: 64, height: 64, borderRadius: 12, objectFit: 'cover' }}
               />
               <div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>{destination.name}</h3>
-                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{destination.duration}</span>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)' }}>{destination.name}</h3>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{destination.duration}</span>
               </div>
             </div>
 
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label className="form-label">Departure Date</label>
+                <label className="form-label" style={{ color: 'var(--text-primary)' }}>Departure Date</label>
                 <div style={{ position: 'relative' }}>
                   <input
                     type="date"
@@ -137,7 +137,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ destination, isOpen,
               </div>
 
               <div className="form-group">
-                <label className="form-label">Number of Solo Travelers</label>
+                <label className="form-label" style={{ color: 'var(--text-primary)' }}>Number of Solo Travelers</label>
                 <select
                   value={travelers}
                   onChange={(e) => setTravelers(Number(e.target.value))}
@@ -151,7 +151,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ destination, isOpen,
               </div>
 
               <div className="form-group">
-                <label className="form-label">Your Full Name</label>
+                <label className="form-label" style={{ color: 'var(--text-primary)' }}>Your Full Name</label>
                 <input
                   type="text"
                   required
@@ -163,7 +163,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ destination, isOpen,
               </div>
 
               <div className="form-group">
-                <label className="form-label">Email Address (for ticket & group link)</label>
+                <label className="form-label" style={{ color: 'var(--text-primary)' }}>Email Address (for ticket & group link)</label>
                 <input
                   type="email"
                   required
@@ -175,7 +175,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ destination, isOpen,
               </div>
 
               <div className="form-group">
-                <label className="form-label">Phone Number / WhatsApp</label>
+                <label className="form-label" style={{ color: 'var(--text-primary)' }}>Phone Number / WhatsApp</label>
                 <input
                   type="tel"
                   placeholder="+91 98765 43210"
@@ -188,18 +188,19 @@ export const BookingModal: React.FC<BookingModalProps> = ({ destination, isOpen,
               {/* Price Calculation */}
               <div 
                 style={{ 
-                  background: '#f1f5f9', 
+                  background: 'var(--bg-subtle)', 
                   borderRadius: 12, 
                   padding: '14px 18px', 
                   margin: '20px 0',
                   display: 'flex',
                   justifyContent: 'space-between',
-                  alignItems: 'center' 
+                  alignItems: 'center',
+                  border: '1px solid var(--border-light)'
                 }}
               >
                 <div>
-                  <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'block' }}>Total Payable</span>
-                  <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'block' }}>Total Payable</span>
+                  <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary)' }}>
                     ₹{totalPrice.toLocaleString('en-IN')}
                   </span>
                 </div>

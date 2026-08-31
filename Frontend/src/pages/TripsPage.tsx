@@ -79,10 +79,10 @@ export const TripsPage: React.FC = () => {
       {/* Page Title Header with View Mode Toggle */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#0f172a', marginBottom: 4 }}>
+          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 4 }}>
             Explore Trips & Group Tours
           </h1>
-          <p style={{ color: '#64748b', fontSize: '0.98rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.98rem' }}>
             Choose between independent solo travel or join curated group batches departing from key cities.
           </p>
         </div>
@@ -154,7 +154,7 @@ export const TripsPage: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
             {/* Departure Origin Filter */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ fontSize: '0.84rem', color: '#64748b', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 <MapPin size={13} /> Group From:
               </span>
               <select
@@ -173,7 +173,7 @@ export const TripsPage: React.FC = () => {
 
             {/* Sort Dropdown */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ fontSize: '0.84rem', color: '#64748b', fontWeight: 600 }}>Sort:</span>
+              <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)', fontWeight: 600 }}>Sort:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -194,10 +194,11 @@ export const TripsPage: React.FC = () => {
           style={{ 
             display: 'flex', 
             gap: 16, 
-            background: '#ffffff', 
+            background: 'var(--bg-surface)', 
             padding: 14, 
             borderRadius: 'var(--radius-md)', 
             border: '1px solid var(--border-light)',
+            boxShadow: 'var(--shadow-sm)',
             flexWrap: 'wrap',
             alignItems: 'center' 
           }}
@@ -209,7 +210,7 @@ export const TripsPage: React.FC = () => {
               placeholder="Search by city, group name (e.g. Delhi, Spiti, Rafting)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.92rem' }}
+              style={{ border: 'none', outline: 'none', background: 'transparent', width: '100%', fontSize: '0.92rem', color: 'var(--text-primary)' }}
             />
           </div>
 

@@ -105,15 +105,15 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
               <Sparkles size={20} color="#0284c7" />
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Start a Community Discussion</h2>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>Start a Community Discussion</h2>
             </div>
-            <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: 20 }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: 20 }}>
               Ask safety questions, find travel buddies for upcoming trips, or share itinerary advice.
             </p>
 
             <form onSubmit={handleCreateSubmit}>
               <div className="form-group">
-                <label className="form-label">Discussion Title / Question</label>
+                <label className="form-label" style={{ color: 'var(--text-primary)' }}>Discussion Title / Question</label>
                 <input
                   type="text"
                   required
@@ -125,7 +125,7 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({
               </div>
 
               <div className="form-group">
-                <label className="form-label">Category</label>
+                <label className="form-label" style={{ color: 'var(--text-primary)' }}>Category</label>
                 <select
                   value={category}
                   onChange={(e: any) => setCategory(e.target.value)}
@@ -140,7 +140,7 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({
               </div>
 
               <div className="form-group">
-                <label className="form-label">Details / Context</label>
+                <label className="form-label" style={{ color: 'var(--text-primary)' }}>Details / Context</label>
                 <textarea
                   required
                   rows={6}
@@ -163,18 +163,18 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({
                 {discussion.author.name.charAt(0).toUpperCase()}
               </div>
               <div>
-                <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{discussion.author.name}</div>
-                <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                  Posted {discussion.timeAgo} · Category: <span style={{ color: '#0284c7', fontWeight: 600 }}>{discussion.category}</span>
+                <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>{discussion.author.name}</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                  Posted {discussion.timeAgo} · Category: <span style={{ color: '#38bdf8', fontWeight: 600 }}>{discussion.category}</span>
                 </div>
               </div>
             </div>
 
-            <h2 style={{ fontSize: '1.45rem', fontWeight: 800, marginBottom: 12, lineHeight: 1.3 }}>
+            <h2 style={{ fontSize: '1.45rem', fontWeight: 800, marginBottom: 12, lineHeight: 1.3, color: 'var(--text-primary)' }}>
               {discussion.title}
             </h2>
 
-            <p style={{ fontSize: '0.98rem', lineHeight: 1.6, color: '#334155', marginBottom: 20 }}>
+            <p style={{ fontSize: '0.98rem', lineHeight: 1.6, color: 'var(--text-secondary)', marginBottom: 20 }}>
               {discussion.content}
             </p>
 
@@ -185,30 +185,30 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({
                 alignItems: 'center', 
                 gap: 12, 
                 paddingBottom: 16, 
-                borderBottom: '1px solid #e2e8f0', 
+                borderBottom: '1px solid var(--border-light)', 
                 marginBottom: 20 
               }}
             >
               <button
                 className="btn btn-outline btn-sm"
                 onClick={handleLike}
-                style={{ color: hasLiked ? '#0284c7' : 'inherit' }}
+                style={{ color: hasLiked ? '#38bdf8' : 'inherit' }}
               >
                 <ThumbsUp size={15} /> Upvote ({likes})
               </button>
-              <span style={{ fontSize: '0.85rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <MessageSquare size={16} /> {replies.length} Replies
               </span>
             </div>
 
             {/* Replies List */}
             <div style={{ marginBottom: 24 }}>
-              <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: 14 }}>
+              <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: 14, color: 'var(--text-primary)' }}>
                 Community Replies
               </h4>
 
               {replies.length === 0 ? (
-                <p style={{ fontSize: '0.88rem', color: '#94a3b8', fontStyle: 'italic' }}>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
                   No replies yet. Be the first to share your thoughts!
                 </p>
               ) : (
@@ -217,17 +217,17 @@ export const DiscussionModal: React.FC<DiscussionModalProps> = ({
                     <div 
                       key={r.id} 
                       style={{ 
-                        background: '#f8fafc', 
+                        background: 'var(--bg-subtle)', 
                         borderRadius: 12, 
                         padding: 14, 
-                        border: '1px solid #e2e8f0' 
+                        border: '1px solid var(--border-light)' 
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <span style={{ fontWeight: 700, fontSize: '0.88rem' }}>{r.author}</span>
-                        <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{r.timeAgo}</span>
+                        <span style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-primary)' }}>{r.author}</span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{r.timeAgo}</span>
                       </div>
-                      <p style={{ fontSize: '0.9rem', color: '#334155', lineHeight: 1.5 }}>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                         {r.content}
                       </p>
                     </div>

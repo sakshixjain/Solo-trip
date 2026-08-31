@@ -28,11 +28,11 @@ export default function Dashboard() {
 
   return (
     <div className="container" style={{ paddingTop: 40, paddingBottom: 80 }}>
-      <div style={{ maxWidth: 800, margin: '0 auto', background: '#ffffff', borderRadius: 24, padding: 36, border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-md)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, borderBottom: '1px solid #e2e8f0', paddingBottom: 16 }}>
+      <div style={{ maxWidth: 800, margin: '0 auto', background: 'var(--bg-surface)', borderRadius: 24, padding: 36, border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-md)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, borderBottom: '1px solid var(--border-light)', paddingBottom: 16 }}>
           <div>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Backend & API Health Dashboard</h1>
-            <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Diagnostic status for Express + Sequelize backend</p>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>Backend & API Health Dashboard</h1>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Diagnostic status for Express + Sequelize backend</p>
           </div>
           <Link to="/" className="btn btn-primary btn-sm">
             Go to SoloTrip App <ArrowRight size={14} />
@@ -40,18 +40,18 @@ export default function Dashboard() {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 28 }}>
-          <div style={{ background: '#f8fafc', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0' }}>
-            <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+          <div style={{ background: 'var(--bg-subtle)', padding: 18, borderRadius: 14, border: '1px solid var(--border-light)' }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
               <Database size={16} color="#0284c7" /> API Server Base
             </div>
-            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }}>{API_URL}</div>
+            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>{API_URL}</div>
           </div>
 
-          <div style={{ background: '#f8fafc', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0' }}>
-            <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+          <div style={{ background: 'var(--bg-subtle)', padding: 18, borderRadius: 14, border: '1px solid var(--border-light)' }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
               <Activity size={16} color="#10b981" /> Health Response
             </div>
-            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: status.includes('running') ? '#10b981' : '#0f172a' }}>
+            <div style={{ fontSize: '1.05rem', fontWeight: 700, color: status.includes('running') ? '#10b981' : 'var(--text-primary)' }}>
               {status}
             </div>
           </div>
@@ -63,21 +63,21 @@ export default function Dashboard() {
           </div>
         )}
 
-        <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: 12 }}>Active API Endpoints</h3>
-        <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.9rem', color: '#334155' }}>
-          <li style={{ padding: '8px 12px', background: '#f1f5f9', borderRadius: 8 }}>
+        <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: 12, color: 'var(--text-primary)' }}>Active API Endpoints</h3>
+        <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+          <li style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: 8 }}>
             <code>POST /register</code> — Create new user
           </li>
-          <li style={{ padding: '8px 12px', background: '#f1f5f9', borderRadius: 8 }}>
+          <li style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: 8 }}>
             <code>POST /login</code> — Authenticate and return JWT token
           </li>
-          <li style={{ padding: '8px 12px', background: '#f1f5f9', borderRadius: 8 }}>
+          <li style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: 8 }}>
             <code>GET /api/places</code> — Fetch all destination places
           </li>
-          <li style={{ padding: '8px 12px', background: '#f1f5f9', borderRadius: 8 }}>
+          <li style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: 8 }}>
             <code>GET /api/trips</code> — Fetch all curated trips
           </li>
-          <li style={{ padding: '8px 12px', background: '#f1f5f9', borderRadius: 8 }}>
+          <li style={{ padding: '8px 12px', background: 'var(--bg-subtle)', borderRadius: 8 }}>
             <code>GET /api/categories</code> — Fetch category tags
           </li>
         </ul>

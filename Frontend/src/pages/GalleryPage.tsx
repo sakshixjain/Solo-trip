@@ -96,10 +96,10 @@ export const GalleryPage: React.FC = () => {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#0284c7', fontSize: '0.84rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
             <Camera size={15} /> Community Gallery
           </div>
-          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#0f172a', marginBottom: 6 }}>
+          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 6 }}>
             Travelers Photo Gallery
           </h1>
-          <p style={{ color: '#64748b', fontSize: '0.98rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.98rem' }}>
             Real memories, scenic milestones, and group laughter posted by our solo and group travelers.
           </p>
         </div>

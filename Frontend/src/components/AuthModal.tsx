@@ -78,19 +78,19 @@ export const AuthModal: React.FC = () => {
         {/* Brand Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
           <img src="/solotrip-logo.png" alt="SoloTrip" style={{ height: 36, width: 'auto', objectFit: 'contain' }} />
-          <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#064e3b' }}>SoloTrip</span>
+          <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary)' }}>SoloTrip</span>
         </div>
 
         {/* Tab Headers */}
-        <div style={{ display: 'flex', gap: 12, marginBottom: 24, borderBottom: '1px solid #e2e8f0', paddingBottom: 12 }}>
+        <div style={{ display: 'flex', gap: 12, marginBottom: 24, borderBottom: '1px solid var(--border-light)', paddingBottom: 12 }}>
           <button
             type="button"
             onClick={() => { setError(null); openAuthModal('login'); }}
             style={{
               fontSize: '1.25rem',
               fontWeight: 800,
-              color: isLogin ? '#0f172a' : '#94a3b8',
-              borderBottom: isLogin ? '2px solid #0f172a' : 'none',
+              color: isLogin ? 'var(--text-primary)' : 'var(--text-muted)',
+              borderBottom: isLogin ? '2px solid var(--primary)' : 'none',
               paddingBottom: 4
             }}
           >
@@ -102,8 +102,8 @@ export const AuthModal: React.FC = () => {
             style={{
               fontSize: '1.25rem',
               fontWeight: 800,
-              color: !isLogin ? '#0f172a' : '#94a3b8',
-              borderBottom: !isLogin ? '2px solid #0f172a' : 'none',
+              color: !isLogin ? 'var(--text-primary)' : 'var(--text-muted)',
+              borderBottom: !isLogin ? '2px solid var(--primary)' : 'none',
               paddingBottom: 4
             }}
           >
@@ -114,8 +114,8 @@ export const AuthModal: React.FC = () => {
         {/* Demo Login Banner */}
         <div
           style={{
-            background: 'linear-gradient(135deg, #eef2ff 0%, #f0fdf4 100%)',
-            border: '1px solid #cbd5e1',
+            background: 'var(--bg-subtle)',
+            border: '1px solid var(--border-light)',
             borderRadius: 12,
             padding: '12px 16px',
             marginBottom: 20,
@@ -126,10 +126,10 @@ export const AuthModal: React.FC = () => {
           }}
         >
           <div>
-            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 5 }}>
+            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 5 }}>
               <Sparkles size={16} color="#4f46e5" /> Instant Demo Access
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
               Explore trips, wishlist, & community without typing
             </div>
           </div>
@@ -137,7 +137,6 @@ export const AuthModal: React.FC = () => {
             type="button"
             className="btn btn-primary btn-sm"
             onClick={handleDemoClick}
-            style={{ background: '#0f172a' }}
           >
             1-Click Demo
           </button>
@@ -146,7 +145,7 @@ export const AuthModal: React.FC = () => {
         {error && (
           <div
             style={{
-              background: '#fef2f2',
+              background: 'rgba(239, 68, 68, 0.15)',
               color: '#ef4444',
               borderRadius: 8,
               padding: '10px 14px',

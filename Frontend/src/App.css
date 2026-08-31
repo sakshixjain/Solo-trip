@@ -2712,31 +2712,76 @@
   align-self: flex-start;
 }
 
-/* Comparison Section: Traditional vs SoloTrip */
+/* Comparison Section: Modern Elevated Battle Matrix */
+.comparison-wrapper {
+  position: relative;
+  max-width: 1080px;
+  margin: 32px auto 0;
+}
+
+.comparison-vs-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-light);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  z-index: 10;
+}
+
+body.dark-theme .comparison-vs-badge {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #38bdf8;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+}
+
 .comparison-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-top: 32px;
+  gap: 28px;
 }
 
 .comparison-card {
-  border-radius: var(--radius-xl);
+  position: relative;
+  border-radius: 24px;
   padding: 36px 32px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.comparison-card:hover {
+  transform: translateY(-4px);
+}
+
+/* 1. Negative / Traditional Card */
 .comparison-card.negative {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: linear-gradient(145deg, #ffffff 0%, #fff5f5 100%);
+  border: 1px solid #fed7d7;
+  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.06);
 }
 
-.comparison-card.positive {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: var(--shadow-lg);
+body.dark-theme .comparison-card.negative {
+  background: linear-gradient(145deg, #14121e 0%, #0e121e 100%);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+}
+
+.comparison-card-top {
+  margin-bottom: 24px;
 }
 
 .comparison-card-badge {
@@ -2744,63 +2789,207 @@
   align-items: center;
   gap: 6px;
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: 5px 12px;
-  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  border-radius: 999px;
   margin-bottom: 14px;
   width: fit-content;
 }
 
-.comparison-card.negative .comparison-card-badge {
+.negative-badge {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+body.dark-theme .negative-badge {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.comparison-card.negative .comparison-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #991b1b;
+  margin-bottom: 6px;
+}
+
+body.dark-theme .comparison-card.negative .comparison-title {
+  color: #fca5a5;
+}
+
+.comparison-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.comparison-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+.comparison-row-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  transition: background 0.2s ease;
+}
+
+.negative-row {
+  background: rgba(239, 68, 68, 0.04);
+  border: 1px solid rgba(239, 68, 68, 0.08);
+}
+
+.negative-row:hover {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+body.dark-theme .negative-row {
+  background: rgba(239, 68, 68, 0.06);
+  border-color: rgba(239, 68, 68, 0.12);
+}
+
+body.dark-theme .negative-row:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.comparison-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.negative-icon {
   background: #fee2e2;
   color: #dc2626;
 }
 
-.comparison-card.positive .comparison-card-badge {
-  background: rgba(56, 189, 248, 0.2);
-  color: #38bdf8;
-  border: 1px solid rgba(56, 189, 248, 0.3);
+body.dark-theme .negative-icon {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
 }
 
-.comparison-title {
-  font-size: 1.45rem;
-  font-weight: 800;
-  margin-bottom: 18px;
-}
-
-.comparison-card.negative .comparison-title {
-  color: #991b1b;
-}
-
-.comparison-card.positive .comparison-title {
-  color: #ffffff;
-}
-
-.comparison-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.comparison-row-text {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 2px;
 }
 
-.comparison-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
+.comparison-row-text strong {
   font-size: 0.92rem;
-  line-height: 1.5;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
-.comparison-card.negative .comparison-item {
+.comparison-card.negative .comparison-row-text strong {
   color: #7f1d1d;
 }
 
-.comparison-card.positive .comparison-item {
-  color: rgba(255, 255, 255, 0.9);
+body.dark-theme .comparison-card.negative .comparison-row-text strong {
+  color: #fecaca;
+}
+
+.comparison-row-text span {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* 2. Positive / SoloTrip Card (Champion Highlight) */
+.comparison-card.positive {
+  background: linear-gradient(145deg, #091726 0%, #0c2338 100%);
+  color: #ffffff;
+  border: 2px solid #10b981;
+  box-shadow: 0 20px 45px -10px rgba(16, 185, 129, 0.28), 0 0 0 1px rgba(16, 185, 129, 0.2);
+  overflow: hidden;
+}
+
+body.dark-theme .comparison-card.positive {
+  background: linear-gradient(145deg, #091522 0%, #0a2133 100%);
+  border: 2px solid #34d399;
+  box-shadow: 0 20px 50px -10px rgba(52, 211, 153, 0.32), 0 0 25px rgba(52, 211, 153, 0.15);
+}
+
+.comparison-card.positive:hover {
+  box-shadow: 0 28px 55px -10px rgba(16, 185, 129, 0.38), 0 0 30px rgba(16, 185, 129, 0.25);
+}
+
+.comparison-glow-effect {
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, rgba(56, 189, 248, 0.15) 50%, transparent 70%);
+  filter: blur(35px);
+  pointer-events: none;
+}
+
+.positive-badge {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(56, 189, 248, 0.2) 100%);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2);
+}
+
+.comparison-card.positive .comparison-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.positive-row {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.positive-row:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+.positive-icon {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+.comparison-card.positive .comparison-row-text strong {
+  color: #ffffff;
+}
+
+.comparison-card.positive .comparison-row-text span {
+  color: #cbd5e1;
+}
+
+.comparison-trust-banner {
+  margin-top: 24px;
+  padding: 12px 16px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #34d399;
+  letter-spacing: 0.02em;
 }
 
 /* FAQ Accordion */
@@ -5968,9 +6157,740 @@
   }
 }
 
+/* ==========================================================================
+   SOLOTRIP COMPLETE DARK MODE STYLES
+   ========================================================================== */
 
+body.dark-theme {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+}
 
+/* 1. Navigation Bar in Dark Mode */
+body.dark-theme .navbar-wrapper {
+  background: rgba(9, 13, 22, 0.92);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
 
+body.dark-theme .nav-brand {
+  color: var(--text-primary);
+}
 
+body.dark-theme .brand-title {
+  color: #ffffff;
+}
 
+body.dark-theme .nav-link-item {
+  color: #94a3b8;
+}
 
+body.dark-theme .nav-link-item:hover,
+body.dark-theme .nav-link-item.active {
+  color: #34d399;
+}
+
+body.dark-theme .nav-indicator-bar {
+  background: #34d399;
+}
+
+body.dark-theme .nav-icon-btn {
+  background: #141e33;
+  color: #cbd5e1;
+}
+
+body.dark-theme .nav-icon-btn:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+body.dark-theme .theme-toggle-pill {
+  background: #141e33;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-theme .theme-toggle-btn {
+  color: #94a3b8;
+}
+
+body.dark-theme .theme-toggle-btn.active {
+  background: #1e293b;
+  color: #34d399;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-theme .login-pill-btn {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #ffffff;
+}
+
+body.dark-theme .login-pill-btn:hover {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+}
+
+body.dark-theme .user-pill-btn {
+  background: #141e33;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+body.dark-theme .user-menu-dropdown {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.65);
+}
+
+body.dark-theme .user-menu-item {
+  color: #cbd5e1;
+}
+
+body.dark-theme .user-menu-item:hover {
+  background: #1e293b;
+  color: #34d399;
+}
+
+body.dark-theme .user-menu-divider {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .mobile-menu-toggle-btn {
+  color: #f8fafc;
+}
+
+body.dark-theme .mobile-drawer-menu {
+  background: #0f172a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-theme .mobile-nav-link {
+  color: #cbd5e1;
+}
+
+body.dark-theme .mobile-nav-link.active {
+  color: #34d399;
+}
+
+.mobile-theme-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid rgba(226, 232, 240, 0.8);
+  margin-top: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+body.dark-theme .mobile-theme-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+}
+
+/* 2. Hero Search Box & Popover */
+body.dark-theme .solotrip-search-card {
+  background: #111a2e;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+body.dark-theme .solotrip-search-card:hover,
+body.dark-theme .solotrip-search-card:focus-within {
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7), 0 0 0 2px #2dd4bf, 0 0 28px rgba(45, 212, 191, 0.25);
+}
+
+body.dark-theme .solotrip-search-input {
+  color: #f8fafc;
+}
+
+body.dark-theme .solotrip-search-input::placeholder {
+  color: #64748b;
+}
+
+body.dark-theme .solotrip-clear-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+body.dark-theme .solotrip-search-divider {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-theme .solotrip-category-select {
+  color: #cbd5e1;
+}
+
+body.dark-theme .solotrip-category-select option {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+body.dark-theme .solotrip-category-select:hover {
+  color: #34d399;
+}
+
+body.dark-theme .solotrip-suggestions-popover {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75);
+}
+
+body.dark-theme .solotrip-suggestion-item {
+  color: #cbd5e1;
+}
+
+body.dark-theme .solotrip-suggestion-item:hover {
+  background: #1e293b;
+  color: #34d399;
+}
+
+/* 3. Section Titles & Icons */
+body.dark-theme .solotrip-section-heading {
+  color: #34d399;
+}
+
+body.dark-theme .solotrip-view-all-link {
+  color: #34d399;
+}
+
+body.dark-theme .solotrip-section-icon.green {
+  color: #34d399;
+}
+
+/* 4. Destinations Cards & Grid */
+body.dark-theme .solotrip-dest-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-theme .solotrip-dest-rating-badge {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+body.dark-theme .destination-card {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme .destination-card:hover {
+  border-color: rgba(52, 211, 153, 0.3);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme .dest-card-title {
+  color: #f8fafc;
+}
+
+body.dark-theme .dest-card-location {
+  color: #94a3b8;
+}
+
+body.dark-theme .dest-card-description {
+  color: #cbd5e1;
+}
+
+body.dark-theme .dest-card-tag {
+  background: #141e33;
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+/* 5. Category Cards */
+body.dark-theme .solotrip-category-card {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .solotrip-category-card:hover {
+  background: #141e33;
+  border-color: rgba(52, 211, 153, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-theme .solotrip-cat-label {
+  color: #f8fafc;
+}
+
+/* 6. Route Planner & Leaflet Map */
+body.dark-theme .solotrip-route-planner-card {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme .solotrip-route-left-col {
+  border-right-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .solotrip-route-icon-box {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+
+body.dark-theme .solotrip-route-title {
+  color: #34d399;
+}
+
+body.dark-theme .solotrip-route-subtitle {
+  color: #94a3b8;
+}
+
+body.dark-theme .solotrip-circuit-pill {
+  background: #141e33;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+body.dark-theme .solotrip-circuit-pill:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+body.dark-theme .solotrip-circuit-pill.active {
+  background: #059669;
+  color: #ffffff;
+  border-color: #059669;
+  box-shadow: 0 2px 10px rgba(5, 150, 105, 0.35);
+}
+
+body.dark-theme .solotrip-timeline-city {
+  color: #f8fafc;
+}
+
+body.dark-theme .solotrip-timeline-note {
+  color: #94a3b8;
+}
+
+body.dark-theme .solotrip-timeline-item.highlight {
+  background: rgba(52, 211, 153, 0.1);
+}
+
+body.dark-theme .solotrip-timeline-line {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+body.dark-theme .solotrip-btn-outline {
+  background: #141e33;
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+body.dark-theme .solotrip-btn-outline:hover {
+  background: #1e293b;
+  border-color: #34d399;
+}
+
+body.dark-theme .solotrip-route-map-col {
+  background: #090d16;
+}
+
+body.dark-theme .solotrip-map-type-switch {
+  background: rgba(15, 23, 42, 0.92);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-theme .solotrip-map-tab {
+  color: #94a3b8;
+}
+
+body.dark-theme .solotrip-map-tab.active {
+  background: #059669;
+  color: #ffffff;
+}
+
+body.dark-theme .solotrip-real-map-zoom-group {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-theme .solotrip-real-map-btn {
+  background: #0f172a;
+  color: #cbd5e1;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-theme .solotrip-real-map-btn:hover {
+  background: #059669;
+  color: #ffffff;
+}
+
+body.dark-theme .solotrip-real-map-zoom-group .solotrip-real-map-btn:first-child {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .solotrip-map-origin-overlay {
+  background: rgba(15, 23, 42, 0.95);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+/* 7. Why SoloTrip & Testimonials */
+body.dark-theme .solotrip-why-card {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+body.dark-theme .solotrip-why-title {
+  color: #f8fafc;
+}
+
+body.dark-theme .solotrip-why-desc {
+  color: #94a3b8;
+}
+
+body.dark-theme .solotrip-carousel-arrow-btn {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+}
+
+body.dark-theme .solotrip-carousel-arrow-btn:hover {
+  background: #141e33;
+  color: #34d399;
+  border-color: #34d399;
+}
+
+body.dark-theme .solotrip-testimonial-card {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+body.dark-theme .solotrip-testi-name {
+  color: #f8fafc;
+}
+
+body.dark-theme .solotrip-testi-city {
+  color: #94a3b8;
+}
+
+body.dark-theme .solotrip-testi-quote {
+  color: #cbd5e1;
+}
+
+/* 8. Trip Cards in Dark Mode */
+body.dark-theme .trip-card {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-theme .trip-card:hover {
+  border-color: rgba(52, 211, 153, 0.3);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.55);
+}
+
+body.dark-theme .trip-card-wishlist-btn {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+}
+
+body.dark-theme .trip-card-wishlist-btn:hover {
+  background: #1e293b;
+}
+
+body.dark-theme .trip-card-title {
+  color: #f8fafc;
+}
+
+body.dark-theme .trip-card-meta {
+  color: #94a3b8;
+}
+
+body.dark-theme .trip-group-snippet {
+  background: #141e33;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .trip-group-name {
+  color: #f8fafc;
+}
+
+body.dark-theme .trip-group-batch {
+  color: #94a3b8;
+}
+
+body.dark-theme .trip-group-seats {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.12);
+}
+
+body.dark-theme .trip-group-seats.urgent {
+  color: #fb7185;
+  background: rgba(244, 63, 94, 0.15);
+}
+
+body.dark-theme .trip-card-footer {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .trip-price-val {
+  color: #34d399;
+}
+
+body.dark-theme .trip-price-label {
+  color: #94a3b8;
+}
+
+body.dark-theme .trip-rating-badge {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+/* 9. Filter Pills & View Toggles */
+body.dark-theme .filter-pill,
+body.dark-theme .tag-pill {
+  background: #141e33;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+body.dark-theme .filter-pill:hover,
+body.dark-theme .tag-pill:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+body.dark-theme .filter-pill.active,
+body.dark-theme .tag-pill.active {
+  background: #059669;
+  border-color: #059669;
+  color: #ffffff;
+}
+
+body.dark-theme .view-mode-toggle {
+  background: #141e33;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-theme .view-mode-btn {
+  color: #94a3b8;
+}
+
+body.dark-theme .view-mode-btn.active {
+  background: #1e293b;
+  color: #34d399;
+}
+
+/* 10. Modals in Dark Mode */
+body.dark-theme .modal-overlay,
+body.dark-theme .auth-modal-overlay,
+body.dark-theme .booking-modal-overlay {
+  background: rgba(3, 7, 18, 0.75);
+}
+
+body.dark-theme .modal-card,
+body.dark-theme .auth-modal-card,
+body.dark-theme .booking-modal-card,
+body.dark-theme .discussion-modal-card,
+body.dark-theme .story-modal-card,
+body.dark-theme .gallery-modal-card,
+body.dark-theme .modal-content {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+}
+
+body.dark-theme .modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .modal-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .modal-close-btn {
+  background: #141e33;
+  color: #94a3b8;
+}
+
+body.dark-theme .modal-close-btn:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+body.dark-theme input[type="text"],
+body.dark-theme input[type="email"],
+body.dark-theme input[type="password"],
+body.dark-theme input[type="number"],
+body.dark-theme input[type="date"],
+body.dark-theme textarea,
+body.dark-theme select,
+body.dark-theme .form-input,
+body.dark-theme .form-control {
+  background: #141e33;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+body.dark-theme input:focus,
+body.dark-theme textarea:focus,
+body.dark-theme select:focus {
+  border-color: #34d399;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.15);
+}
+
+/* 11. Community, Stories & Gallery */
+body.dark-theme .community-pillar-card {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .community-pillar-title {
+  color: #f8fafc;
+}
+
+body.dark-theme .community-pillar-desc {
+  color: #94a3b8;
+}
+
+body.dark-theme .discussion-card {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+body.dark-theme .discussion-title {
+  color: #f8fafc;
+}
+
+body.dark-theme .discussion-text,
+body.dark-theme .discussion-content {
+  color: #cbd5e1;
+}
+
+body.dark-theme .discussion-author {
+  color: #94a3b8;
+}
+
+body.dark-theme .story-card {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+body.dark-theme .story-card-title {
+  color: #f8fafc;
+}
+
+body.dark-theme .story-card-body p {
+  color: #94a3b8;
+}
+
+body.dark-theme .story-author-name {
+  color: #f8fafc;
+}
+
+body.dark-theme .story-date {
+  color: #94a3b8;
+}
+
+body.dark-theme .gallery-photo-card {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .gallery-card-caption {
+  color: #f8fafc;
+}
+
+body.dark-theme .gallery-card-traveler {
+  color: #94a3b8;
+}
+
+/* 12. Trip Detail Page & Overview Cards */
+body.dark-theme .trip-detail-card,
+body.dark-theme .trip-overview-panel,
+body.dark-theme .booking-sidebar-card,
+body.dark-theme .itinerary-day-card,
+body.dark-theme .reviews-container-card {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme .itinerary-day-header {
+  color: #f8fafc;
+}
+
+body.dark-theme .itinerary-day-desc {
+  color: #cbd5e1;
+}
+
+body.dark-theme .inclusion-item {
+  color: #cbd5e1;
+}
+
+/* 13. Admin Dashboard & Tables */
+body.dark-theme .admin-container,
+body.dark-theme .admin-layout {
+  background: #090d16;
+}
+
+body.dark-theme .admin-sidebar {
+  background: #0b1120;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .admin-header {
+  background: #0f172a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .admin-card,
+body.dark-theme .stat-card,
+body.dark-theme .admin-table-container,
+body.dark-theme .admin-table-card {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme .stat-title,
+body.dark-theme .stat-label {
+  color: #94a3b8;
+}
+
+body.dark-theme .stat-value {
+  color: #f8fafc;
+}
+
+body.dark-theme .admin-table th {
+  background: #141e33;
+  color: #cbd5e1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .admin-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+}
+
+body.dark-theme .admin-table tr:hover td {
+  background: #141e33;
+}
+
+/* 14. Buttons and Generic Card Overrides */
+body.dark-theme .btn-secondary {
+  background: #141e33;
+  color: #f8fafc;
+}
+
+body.dark-theme .btn-secondary:hover {
+  background: #1e293b;
+}
+
+body.dark-theme .btn-outline {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+}
+
+body.dark-theme .btn-outline:hover {
+  background: #141e33;
+  border-color: #34d399;
+}

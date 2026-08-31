@@ -1423,13 +1423,13 @@ export const AdminPage: React.FC = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
                       <img src={dest.image} alt={dest.name} style={{ width: 44, height: 44, borderRadius: 10, objectFit: 'cover' }} />
                       <div>
-                        <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.92rem' }}>{dest.name}</div>
+                        <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.92rem' }}>{dest.name}</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#f59e0b', fontSize: '0.8rem', fontWeight: 700 }}>
                           <Star size={13} fill="#f59e0b" /> {dest.rating} ({dest.reviewsCount} verified reviews)
                         </div>
                       </div>
                     </div>
-                    <p style={{ fontSize: '0.84rem', color: '#475569', fontStyle: 'italic', background: '#f8fafc', padding: 12, borderRadius: 10 }}>
+                    <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', fontStyle: 'italic', background: 'var(--bg-subtle)', padding: 12, borderRadius: 10 }}>
                       "The solo itinerary was exceptionally well planned. Safe accommodation, zero single fee penalty, and prompt captain support."
                     </p>
                   </div>
@@ -1490,7 +1490,7 @@ export const AdminPage: React.FC = () => {
                       onChange={(e) => setZeroPenaltyBadge(e.target.checked)} 
                       style={{ width: 18, height: 18 }} 
                     />
-                    <label htmlFor="penaltyCheck" style={{ fontSize: '0.9rem', fontWeight: 600, color: '#0f172a', cursor: 'pointer' }}>
+                    <label htmlFor="penaltyCheck" style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)', cursor: 'pointer' }}>
                       Enforce Zero Single Penalty Guarantee on All Solo Stays
                     </label>
                   </div>
@@ -1517,10 +1517,10 @@ export const AdminPage: React.FC = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <div>
-                <span style={{ fontSize: '0.78rem', color: '#0284c7', fontWeight: 800, textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 800, textTransform: 'uppercase' }}>
                   {editingTripId ? 'Edit Itinerary' : 'Create New Itinerary'}
                 </span>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
                   {editingTripId ? 'Update Tour Package' : 'Publish New Tour Package'}
                 </h3>
               </div>
@@ -1531,7 +1531,7 @@ export const AdminPage: React.FC = () => {
 
             <form onSubmit={handleSaveTrip} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {/* Tour Style Selector */}
-              <div style={{ background: '#f8fafc', padding: 14, borderRadius: 14, border: '1px solid #e2e8f0' }}>
+              <div style={{ background: 'var(--bg-subtle)', padding: 14, borderRadius: 14, border: '1px solid var(--border-light)' }}>
                 <label className="form-label" style={{ marginBottom: 8, display: 'block' }}>Tour Style</label>
                 <div style={{ display: 'flex', gap: 10 }}>
                   <button 

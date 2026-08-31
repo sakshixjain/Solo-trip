@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Compass, 
@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useTheme } from '../context/ThemeContext';
 
 interface NavbarProps {
   onOpenSearch?: () => void;
@@ -24,23 +25,9 @@ export const Navbar: React.FC<NavbarProps> = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout, openAuthModal } = useAuth();
   const { wishlistIds, bookings } = useWishlist();
+  const { isDarkMode, toggleTheme } = useTheme();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  // Theme state (Light/Dark toggle)
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-    return localStorage.getItem('solotrip_theme') === 'dark';
-  });
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.body.classList.add('dark-theme');
-      localStorage.setItem('solotrip_theme', 'dark');
-    } else {
-      document.body.classList.remove('dark-theme');
-      localStorage.setItem('solotrip_theme', 'light');
-    }
-  }, [isDarkMode]);
 
   const isActive = (path: string) => {
     if (path === '/' && location.pathname === '/') return true;
@@ -86,7 +73,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
         {/* Right Actions */}
         <div className="nav-actions-right">
           {/* Light / Dark Mode Toggle Pill */}
-          <div className="theme-toggle-pill" onClick={() => setIsDarkMode(!isDarkMode)} title="Toggle Color Theme">
+          <div className="theme-toggle-pill" onClick={toggleTheme} title="Toggle Color Theme">
             <button type="button" className={`theme-toggle-btn ${!isDarkMode ? 'active' : ''}`} aria-label="Light Mode">
               <Sun size={14} />
             </button>
@@ -114,10 +101,10 @@ export const Navbar: React.FC<NavbarProps> = () => {
               {isUserMenuOpen && (
                 <div className="user-menu-dropdown animate-scale-up" onClick={() => setIsUserMenuOpen(false)}>
                   <div style={{ padding: '10px 14px' }}>
-                    <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#0f172a' }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
                       {user.name}
                     </div>
-                    <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                       {user.email}
                     </div>
                   </div>
@@ -205,6 +192,18 @@ export const Navbar: React.FC<NavbarProps> = () => {
             About Us
           </Link>
           
+          <div className="mobile-theme-row" onClick={toggleTheme}>
+            <span>Appearance ({isDarkMode ? 'Dark Mode' : 'Light Mode'})</span>
+            <div className="theme-toggle-pill">
+              <button type="button" className={`theme-toggle-btn ${!isDarkMode ? 'active' : ''}`} aria-label="Light Mode">
+                <Sun size={14} />
+              </button>
+              <button type="button" className={`theme-toggle-btn ${isDarkMode ? 'active' : ''}`} aria-label="Dark Mode">
+                <Moon size={14} />
+              </button>
+            </div>
+          </div>
+
           {!isAuthenticated && (
             <div style={{ marginTop: 12 }}>
               <button 

@@ -182,7 +182,7 @@ export const StoryModal: React.FC<StoryModalProps> = ({
               </div>
             </div>
 
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: 12, lineHeight: 1.3 }}>
+            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: 12, lineHeight: 1.3, color: 'var(--text-primary)' }}>
               {story.title}
             </h2>
 
@@ -194,7 +194,7 @@ export const StoryModal: React.FC<StoryModalProps> = ({
                 justifyContent: 'space-between',
                 paddingBottom: 16,
                 marginBottom: 20,
-                borderBottom: '1px solid #e2e8f0',
+                borderBottom: '1px solid var(--border-light)',
                 flexWrap: 'wrap',
                 gap: 12
               }}
@@ -206,8 +206,8 @@ export const StoryModal: React.FC<StoryModalProps> = ({
                   style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }}
                 />
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>{story.author.name}</div>
-                  <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-primary)' }}>{story.author.name}</div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                     {story.date} · {story.readTime}
                   </div>
                 </div>
@@ -228,8 +228,8 @@ export const StoryModal: React.FC<StoryModalProps> = ({
               </div>
             </div>
 
-            <div style={{ fontSize: '1.02rem', lineHeight: 1.8, color: '#334155' }}>
-              <p style={{ marginBottom: 16, fontWeight: 500, color: '#0f172a' }}>
+            <div style={{ fontSize: '1.02rem', lineHeight: 1.8, color: 'var(--text-secondary)' }}>
+              <p style={{ marginBottom: 16, fontWeight: 500, color: 'var(--text-primary)' }}>
                 "{story.excerpt}"
               </p>
               <p style={{ whiteSpace: 'pre-line' }}>{story.content}</p>

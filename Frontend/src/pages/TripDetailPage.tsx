@@ -266,11 +266,11 @@ export const TripDetailPage: React.FC = () => {
             <div className="animate-fade-in">
               {/* Group Tour Departure & Crowd Details Card (If available) */}
               {destination.groupInfo && (
-                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: 'var(--radius-md)', padding: 20, marginBottom: 24 }}>
+                <div style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-md)', padding: 20, marginBottom: 24 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <Users size={18} color="#0284c7" />
-                      <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
+                      <Users size={18} color="var(--primary)" />
+                      <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                         Group Tour & Departure Info
                       </h4>
                     </div>
@@ -546,29 +546,29 @@ export const TripDetailPage: React.FC = () => {
 
               {/* Surrounding & Transit Info */}
               <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
-                <div style={{ background: '#f8fafc', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0' }}>
-                  <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <MapPin size={16} color="#0284c7" /> Exact Address
+                <div style={{ background: 'var(--bg-subtle)', padding: 18, borderRadius: 14, border: '1px solid var(--border-light)' }}>
+                  <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <MapPin size={16} color="var(--primary)" /> Exact Address
                   </h4>
-                  <p style={{ color: '#475569', fontSize: '0.88rem', lineHeight: 1.5, margin: 0 }}>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: 1.5, margin: 0 }}>
                     {destination.address || destination.location}
                   </p>
                 </div>
 
-                <div style={{ background: '#f8fafc', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0' }}>
-                  <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ background: 'var(--bg-subtle)', padding: 18, borderRadius: 14, border: '1px solid var(--border-light)' }}>
+                  <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
                     <Compass size={16} color="#10b981" /> Coordinates & Region
                   </h4>
-                  <p style={{ color: '#475569', fontSize: '0.88rem', lineHeight: 1.5, margin: 0 }}>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: 1.5, margin: 0 }}>
                     {destination.latitude?.toFixed(4)}° N, {destination.longitude?.toFixed(4)}° E • {destination.city || destination.state || destination.country}
                   </p>
                 </div>
 
-                <div style={{ background: '#f8fafc', padding: 18, borderRadius: 14, border: '1px solid #e2e8f0' }}>
-                  <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0f172a', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ background: 'var(--bg-subtle)', padding: 18, borderRadius: 14, border: '1px solid var(--border-light)' }}>
+                  <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
                     <ShieldCheck size={16} color="#f59e0b" /> Solo Transit Safety
                   </h4>
-                  <p style={{ color: '#475569', fontSize: '0.88rem', lineHeight: 1.5, margin: 0 }}>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: 1.5, margin: 0 }}>
                     Verified taxi pickups, bus terminals, and solo-friendly hostel clusters nearby.
                   </p>
                 </div>
@@ -673,13 +673,13 @@ export const TripDetailPage: React.FC = () => {
               </div>
 
               {/* Write Review Form */}
-              <div style={{ background: '#f8fafc', borderRadius: 16, padding: 20, border: '1px solid #e2e8f0' }}>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: 12 }}>
+              <div style={{ background: 'var(--bg-subtle)', borderRadius: 16, padding: 20, border: '1px solid var(--border-light)' }}>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: 12, color: 'var(--text-primary)' }}>
                   Write a Review
                 </h4>
                 <form onSubmit={handleAddReview}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                    <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#64748b' }}>Rating:</span>
+                    <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-muted)' }}>Rating:</span>
                     <select
                       value={newRating}
                       onChange={(e) => setNewRating(Number(e.target.value))}

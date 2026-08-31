@@ -40,17 +40,17 @@ export default function Login() {
     <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <div 
         style={{ 
-          background: '#ffffff', 
+          background: 'var(--bg-surface)', 
           borderRadius: 24, 
           padding: '40px 36px', 
           maxWidth: 440, 
           width: '100%', 
           boxShadow: 'var(--shadow-xl)',
-          border: '1px solid #e2e8f0' 
+          border: '1px solid var(--border-light)' 
         }}
         className="animate-scale-up"
       >
-        <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', color: '#64748b', marginBottom: 20 }}>
+        <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: 20 }}>
           <ArrowLeft size={16} /> Back to Home
         </Link>
 
@@ -60,7 +60,7 @@ export default function Login() {
               width: 48, 
               height: 48, 
               borderRadius: 14, 
-              background: '#0f172a', 
+              background: 'var(--primary)', 
               color: '#ffffff', 
               display: 'flex', 
               alignItems: 'center', 
@@ -70,8 +70,8 @@ export default function Login() {
           >
             <Plane size={24} />
           </div>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Welcome Back</h1>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: 4 }}>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>Welcome Back</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: 4 }}>
             Sign in to access your wishlist, bookings, and community threads.
           </p>
         </div>
@@ -82,8 +82,8 @@ export default function Login() {
           onClick={handleDemo}
           style={{
             width: '100%',
-            background: 'linear-gradient(135deg, #eef2ff 0%, #f0fdf4 100%)',
-            border: '1px solid #cbd5e1',
+            background: 'var(--bg-subtle)',
+            border: '1px solid var(--border-light)',
             borderRadius: 12,
             padding: '12px 16px',
             marginBottom: 20,
@@ -92,7 +92,7 @@ export default function Login() {
             justifyContent: 'center',
             gap: 8,
             fontWeight: 700,
-            color: '#1e293b',
+            color: 'var(--text-primary)',
             fontSize: '0.92rem',
             cursor: 'pointer'
           }}
@@ -104,7 +104,7 @@ export default function Login() {
         {error && (
           <div
             style={{
-              background: '#fef2f2',
+              background: 'rgba(239, 68, 68, 0.15)',
               color: '#ef4444',
               borderRadius: 8,
               padding: '10px 14px',
@@ -122,7 +122,7 @@ export default function Login() {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Email Address</label>
+            <label className="form-label" style={{ color: 'var(--text-primary)' }}>Email Address</label>
             <input
               type="email"
               required
@@ -134,7 +134,7 @@ export default function Login() {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Password</label>
+            <label className="form-label" style={{ color: 'var(--text-primary)' }}>Password</label>
             <input
               type="password"
               required
@@ -155,9 +155,9 @@ export default function Login() {
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: 24, fontSize: '0.9rem', color: '#64748b' }}>
+        <div style={{ textAlign: 'center', marginTop: 24, fontSize: '0.9rem', color: 'var(--text-muted)' }}>
           Don’t have an account?{' '}
-          <Link to="/register" style={{ color: '#0284c7', fontWeight: 700 }}>
+          <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 700 }}>
             Sign Up
           </Link>
         </div>

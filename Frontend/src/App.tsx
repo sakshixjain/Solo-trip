@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
+import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { Navbar } from './components/Navbar';
@@ -58,13 +59,15 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <WishlistProvider>
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
-      </WishlistProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <WishlistProvider>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </WishlistProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

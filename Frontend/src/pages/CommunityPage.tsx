@@ -28,10 +28,10 @@ export const CommunityPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16, marginBottom: 36 }}>
         <div>
-          <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#0f172a', marginBottom: 6 }}>
+          <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 6 }}>
             Community
           </h1>
-          <p style={{ color: '#64748b', fontSize: '1.05rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem' }}>
             Connect. Share. Inspire. You never walk alone with SoloTrip.
           </p>
         </div>

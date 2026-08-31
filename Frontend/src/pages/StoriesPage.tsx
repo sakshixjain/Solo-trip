@@ -21,10 +21,10 @@ export const StoriesPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>
         <div>
-          <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#0f172a', marginBottom: 6 }}>
+          <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 6 }}>
             Travel Stories
           </h1>
-          <p style={{ color: '#64748b', fontSize: '1.05rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem' }}>
             Real experiences, revelations, and lessons from solo wanderers worldwide.
           </p>
         </div>

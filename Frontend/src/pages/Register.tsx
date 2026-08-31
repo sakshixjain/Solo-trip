@@ -47,17 +47,17 @@ export default function Register() {
     <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <div 
         style={{ 
-          background: '#ffffff', 
+          background: 'var(--bg-surface)', 
           borderRadius: 24, 
           padding: '40px 36px', 
           maxWidth: 480, 
           width: '100%', 
           boxShadow: 'var(--shadow-xl)',
-          border: '1px solid #e2e8f0' 
+          border: '1px solid var(--border-light)' 
         }}
         className="animate-scale-up"
       >
-        <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', color: '#64748b', marginBottom: 20 }}>
+        <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: 20 }}>
           <ArrowLeft size={16} /> Back to Home
         </Link>
 
@@ -67,7 +67,7 @@ export default function Register() {
               width: 48, 
               height: 48, 
               borderRadius: 14, 
-              background: '#0f172a', 
+              background: 'var(--primary)', 
               color: '#ffffff', 
               display: 'flex', 
               alignItems: 'center', 
@@ -77,8 +77,8 @@ export default function Register() {
           >
             <Plane size={24} />
           </div>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Create an Account</h1>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: 4 }}>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>Create an Account</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: 4 }}>
             Join a global community of bold, curious solo travelers.
           </p>
         </div>
@@ -86,7 +86,7 @@ export default function Register() {
         {error && (
           <div
             style={{
-              background: '#fef2f2',
+              background: 'rgba(239, 68, 68, 0.15)',
               color: '#ef4444',
               borderRadius: 8,
               padding: '10px 14px',
@@ -104,7 +104,7 @@ export default function Register() {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Full Name</label>
+            <label className="form-label" style={{ color: 'var(--text-primary)' }}>Full Name</label>
             <input
               type="text"
               required
@@ -117,7 +117,7 @@ export default function Register() {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div className="form-group">
-              <label className="form-label">City</label>
+              <label className="form-label" style={{ color: 'var(--text-primary)' }}>City</label>
               <input
                 type="text"
                 placeholder="e.g. Bangalore"
@@ -127,7 +127,7 @@ export default function Register() {
               />
             </div>
             <div className="form-group">
-              <label className="form-label">State</label>
+              <label className="form-label" style={{ color: 'var(--text-primary)' }}>State</label>
               <input
                 type="text"
                 placeholder="e.g. Karnataka"
@@ -139,7 +139,7 @@ export default function Register() {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Email Address</label>
+            <label className="form-label" style={{ color: 'var(--text-primary)' }}>Email Address</label>
             <input
               type="email"
               required
@@ -151,7 +151,7 @@ export default function Register() {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Password (Min. 6 characters)</label>
+            <label className="form-label" style={{ color: 'var(--text-primary)' }}>Password (Min. 6 characters)</label>
             <input
               type="password"
               required
@@ -172,9 +172,9 @@ export default function Register() {
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: 24, fontSize: '0.9rem', color: '#64748b' }}>
+        <div style={{ textAlign: 'center', marginTop: 24, fontSize: '0.9rem', color: 'var(--text-muted)' }}>
           Already have an account?{' '}
-          <Link to="/login" style={{ color: '#0284c7', fontWeight: 700 }}>
+          <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700 }}>
             Sign In
           </Link>
         </div>

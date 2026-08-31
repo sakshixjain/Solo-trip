@@ -436,7 +436,7 @@ export const Home: React.FC = () => {
                   <div className="solotrip-cat-icon-wrap" style={{ color: cat.color }}>
                     <IconComponent size={22} />
                   </div>
-                  <span className="solotrip-cat-label" style={{ color: '#0f172a' }}>
+                  <span className="solotrip-cat-label" style={{ color: 'var(--text-primary)' }}>
                     {cat.title}
                   </span>
                 </div>
@@ -453,7 +453,7 @@ export const Home: React.FC = () => {
         <div className="container">
           {/* Circuit Switcher Tabs */}
           <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.84rem', fontWeight: 800, color: '#064e3b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <span style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               📍 Popular Circuits:
             </span>
             {ROUTE_CIRCUITS.map((circ, idx) => (
@@ -477,7 +477,7 @@ export const Home: React.FC = () => {
               <div>
                 <div className="solotrip-route-header">
                   <div className="solotrip-route-icon-box">
-                    <MapIcon size={20} color="#064e3b" />
+                    <MapIcon size={20} color="var(--primary)" />
                   </div>
                   <div>
                     <h3 className="solotrip-route-title">Plan Your Trip</h3>
@@ -488,12 +488,12 @@ export const Home: React.FC = () => {
                 </div>
 
                 {/* Circuit Info Strip */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: '#f8fafc', padding: '8px 12px', borderRadius: 10, border: '1px solid #e2e8f0', marginBottom: 16 }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0f172a' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'var(--bg-subtle)', padding: '8px 12px', borderRadius: 10, border: '1px solid var(--border-light)', marginBottom: 16 }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                     🛣️ {activeCircuit.totalKm} Total
                   </span>
-                  <span style={{ color: '#cbd5e1' }}>•</span>
-                  <span style={{ fontSize: '0.8rem', color: '#0284c7', fontWeight: 600 }}>
+                  <span style={{ color: 'var(--text-muted)' }}>•</span>
+                  <span style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 600 }}>
                     ⏱️ {activeCircuit.totalDuration} Drive
                   </span>
                 </div>
@@ -614,15 +614,15 @@ export const Home: React.FC = () => {
       {/* =========================================================================
           6. UPCOMING GROUP TOURS (FIXED BATCHES WITH DEPARTURE CITIES)
           ========================================================================= */}
-      <section className="solotrip-section" style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+      <section className="solotrip-section" style={{ background: 'var(--bg-subtle)', borderTop: '1px solid var(--border-light)', borderBottom: '1px solid var(--border-light)' }}>
         <div className="container">
           <div className="solotrip-section-header">
             <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#064e3b', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--primary)', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
                 <Users size={15} /> Group Batches & Fixed Departures
               </div>
               <h2 className="solotrip-section-heading" style={{ fontSize: '1.45rem' }}>Upcoming Group Tours</h2>
-              <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '4px 0 0 0' }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
                 Join curated small group batches departing from Delhi, Mumbai, Bangalore & Chandigarh with certified captains.
               </p>
             </div>
@@ -643,69 +643,145 @@ export const Home: React.FC = () => {
       {/* =========================================================================
           7. SOLOTRIP VS TRADITIONAL TOUR OPERATORS COMPARISON
           ========================================================================= */}
-      <section className="solotrip-section">
+      <section className="solotrip-section" style={{ position: 'relative', overflow: 'hidden' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 28px' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#064e3b', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
-              <Sparkles size={16} /> The Solo Difference
+          <div style={{ textAlign: 'center', maxWidth: 720, margin: '0 auto 36px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--primary)', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, background: 'rgba(52, 211, 153, 0.12)', padding: '6px 14px', borderRadius: 999, border: '1px solid rgba(52, 211, 153, 0.25)' }}>
+              <Sparkles size={15} /> The Solo Revolution
             </div>
-            <h2 className="solotrip-section-heading" style={{ fontSize: '1.6rem' }}>Why Travel Solo With Us?</h2>
-            <p style={{ fontSize: '0.88rem', color: '#64748b', margin: '6px 0 0 0', lineHeight: 1.5 }}>
-              Traditional tour agencies force solo travelers into rigid group compromises and expensive single-room penalties. Here is how SoloTrip rewrites the rules.
+            <h2 className="solotrip-section-heading" style={{ fontSize: '2rem', fontWeight: 800 }}>
+              Why Travel Solo With Us?
+            </h2>
+            <p style={{ fontSize: '0.94rem', color: 'var(--text-muted)', margin: '8px 0 0 0', lineHeight: 1.6 }}>
+              Traditional travel agencies force solo explorers into rigid group compromises and hefty single-room penalties. Here is how SoloTrip puts you in complete control.
             </p>
           </div>
 
-          <div className="comparison-container">
-            {/* Traditional Agency Card */}
-            <div className="comparison-card negative">
-              <div className="comparison-card-badge">
-                <XCircle size={14} /> Traditional Tour Agencies
-              </div>
-              <h3 className="comparison-title">The Outdated Group Model</h3>
-              <ul className="comparison-list">
-                <li className="comparison-item">
-                  <XCircle size={18} color="#dc2626" style={{ flexShrink: 0, marginTop: 2 }} />
-                  <span><strong>Hefty Single Penalties:</strong> Charged up to 40% more for traveling solo without a shared room partner.</span>
-                </li>
-                <li className="comparison-item">
-                  <XCircle size={18} color="#dc2626" style={{ flexShrink: 0, marginTop: 2 }} />
-                  <span><strong>Rigid Fixed Schedules:</strong> Forced wake-up times, hurried sightseeing stops, and zero personal freedom.</span>
-                </li>
-                <li className="comparison-item">
-                  <XCircle size={18} color="#dc2626" style={{ flexShrink: 0, marginTop: 2 }} />
-                  <span><strong>Disconnected Big Hotels:</strong> Generic corporate hotels outside city centers with zero social traveler atmosphere.</span>
-                </li>
-                <li className="comparison-item">
-                  <XCircle size={18} color="#dc2626" style={{ flexShrink: 0, marginTop: 2 }} />
-                  <span><strong>Hidden Extra Charges:</strong> Opaque pricing with surprise on-spot fees for meals, guides, and permits.</span>
-                </li>
-              </ul>
+          <div className="comparison-wrapper">
+            {/* Center Floating VS Badge for Desktop */}
+            <div className="comparison-vs-badge">
+              <span>VS</span>
             </div>
 
-            {/* SoloTrip Positive Card */}
-            <div className="comparison-card positive">
-              <div className="comparison-card-badge">
-                <CheckCircle2 size={14} /> The SoloTrip Ecosystem
+            <div className="comparison-container">
+              {/* Traditional Agency Card */}
+              <div className="comparison-card negative">
+                <div className="comparison-card-top">
+                  <div className="comparison-card-badge negative-badge">
+                    <XCircle size={14} /> Outdated Agency Model
+                  </div>
+                  <h3 className="comparison-title">Traditional Tour Operators</h3>
+                  <p className="comparison-subtitle">
+                    Designed for rigid herds, not independent solo travelers.
+                  </p>
+                </div>
+
+                <div className="comparison-items-list">
+                  <div className="comparison-row-item negative-row">
+                    <div className="comparison-icon-box negative-icon">
+                      <XCircle size={18} />
+                    </div>
+                    <div className="comparison-row-text">
+                      <strong>Hefty Single Supplements</strong>
+                      <span>Penalized up to 40% more for wanting your own private room.</span>
+                    </div>
+                  </div>
+
+                  <div className="comparison-row-item negative-row">
+                    <div className="comparison-icon-box negative-icon">
+                      <XCircle size={18} />
+                    </div>
+                    <div className="comparison-row-text">
+                      <strong>Rigid 6 AM Schedules</strong>
+                      <span>Forced wake-ups, hurried 15-minute stops, and zero personal freedom.</span>
+                    </div>
+                  </div>
+
+                  <div className="comparison-row-item negative-row">
+                    <div className="comparison-icon-box negative-icon">
+                      <XCircle size={18} />
+                    </div>
+                    <div className="comparison-row-text">
+                      <strong>Isolated Suburban Hotels</strong>
+                      <span>Generic highway corporate hotels far away from authentic city life.</span>
+                    </div>
+                  </div>
+
+                  <div className="comparison-row-item negative-row">
+                    <div className="comparison-icon-box negative-icon">
+                      <XCircle size={18} />
+                    </div>
+                    <div className="comparison-row-text">
+                      <strong>Hidden On-Spot Surcharges</strong>
+                      <span>Opaque pricing with surprise mandatory tips, guide fees & permit extras.</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="comparison-title">Built 100% For Your Independence</h3>
-              <ul className="comparison-list">
-                <li className="comparison-item">
-                  <CheckCircle2 size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: 2 }} />
-                  <span><strong>Zero Single-Person Surcharges:</strong> Transparent, direct itemized pricing with fair rates for solo bookings.</span>
-                </li>
-                <li className="comparison-item">
-                  <CheckCircle2 size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: 2 }} />
-                  <span><strong>Total Schedule Autonomy:</strong> Wake up when you want, explore hidden cafes, or linger by mountain streams without rushing.</span>
-                </li>
-                <li className="comparison-item">
-                  <CheckCircle2 size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: 2 }} />
-                  <span><strong>Vetted Social Stays:</strong> Handpicked boutique hostels and homestays with common lounges, fast WiFi, and certified security.</span>
-                </li>
-                <li className="comparison-item">
-                  <CheckCircle2 size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: 2 }} />
-                  <span><strong>Supportive Community & Live GPS:</strong> Real-time route estimates from your city and forums to meet co-travelers when you want company.</span>
-                </li>
-              </ul>
+
+              {/* SoloTrip Positive Card (Champion Highlight) */}
+              <div className="comparison-card positive">
+                {/* Luminous Glow Highlight */}
+                <div className="comparison-glow-effect" />
+                
+                <div className="comparison-card-top">
+                  <div className="comparison-card-badge positive-badge">
+                    <Sparkles size={14} /> 100% Tailored For Solos
+                  </div>
+                  <h3 className="comparison-title">The SoloTrip Ecosystem</h3>
+                  <p className="comparison-subtitle">
+                    Total freedom, authentic stays, and verified safety for independent explorers.
+                  </p>
+                </div>
+
+                <div className="comparison-items-list">
+                  <div className="comparison-row-item positive-row">
+                    <div className="comparison-icon-box positive-icon">
+                      <CheckCircle2 size={18} />
+                    </div>
+                    <div className="comparison-row-text">
+                      <strong>Zero Single Room Penalties</strong>
+                      <span>Transparent, direct itemized rates with guaranteed fair solo pricing.</span>
+                    </div>
+                  </div>
+
+                  <div className="comparison-row-item positive-row">
+                    <div className="comparison-icon-box positive-icon">
+                      <CheckCircle2 size={18} />
+                    </div>
+                    <div className="comparison-row-text">
+                      <strong>100% Schedule Autonomy</strong>
+                      <span>Sleep in, linger at mountain cafes, or hike spontaneous trails at your pace.</span>
+                    </div>
+                  </div>
+
+                  <div className="comparison-row-item positive-row">
+                    <div className="comparison-icon-box positive-icon">
+                      <CheckCircle2 size={18} />
+                    </div>
+                    <div className="comparison-row-text">
+                      <strong>Handpicked Social Stays</strong>
+                      <span>Vetted boutique hostels and homestays with common lounges & fast WiFi.</span>
+                    </div>
+                  </div>
+
+                  <div className="comparison-row-item positive-row">
+                    <div className="comparison-icon-box positive-icon">
+                      <CheckCircle2 size={18} />
+                    </div>
+                    <div className="comparison-row-text">
+                      <strong>Active Community & Live GPS Routes</strong>
+                      <span>Real-time travel estimates from your city + forums to meet co-travelers.</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Trust Banner */}
+                <div className="comparison-trust-banner">
+                  <ShieldCheck size={16} />
+                  <span>25-Point Safety Audit • Zero Hidden Fees • 24/7 Solo Support</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -714,15 +790,15 @@ export const Home: React.FC = () => {
       {/* =========================================================================
           8. REAL TRAVELER STORIES SNIPPET
           ========================================================================= */}
-      <section className="solotrip-section" style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
+      <section className="solotrip-section" style={{ background: 'var(--bg-subtle)', borderTop: '1px solid var(--border-light)' }}>
         <div className="container">
           <div className="solotrip-section-header">
             <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#064e3b', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--primary)', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
                 <BookOpen size={15} /> Real Solo Travelogues
               </div>
               <h2 className="solotrip-section-heading" style={{ fontSize: '1.45rem' }}>Traveler Stories & Guides</h2>
-              <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '4px 0 0 0' }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
                 Unfiltered perspectives, budgeting secrets, and guides written by real solo explorers.
               </p>
             </div>
@@ -781,11 +857,11 @@ export const Home: React.FC = () => {
         <div className="container">
           <div className="solotrip-section-header">
             <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#064e3b', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--primary)', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
                 <Camera size={15} /> Real Wanderers Community Feed
               </div>
               <h2 className="solotrip-section-heading" style={{ fontSize: '1.45rem' }}>Travelers Photo Gallery</h2>
-              <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '4px 0 0 0' }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
                 Live moments, mountain summits, and group memories posted by solo travelers and group batches.
               </p>
             </div>
@@ -838,7 +914,7 @@ export const Home: React.FC = () => {
       {/* =========================================================================
           10. WHAT TRAVELERS SAY SECTION (TESTIMONIALS CAROUSEL)
           ========================================================================= */}
-      <section className="solotrip-section" style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
+      <section className="solotrip-section" style={{ background: 'var(--bg-subtle)', borderTop: '1px solid var(--border-light)' }}>
         <div className="container">
           <div className="solotrip-section-header">
             <div className="solotrip-section-title-wrap">
@@ -905,11 +981,11 @@ export const Home: React.FC = () => {
       <section className="solotrip-section">
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 28px' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#064e3b', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--primary)', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
               <BookOpen size={16} /> Clear Answers
             </div>
             <h2 className="solotrip-section-heading" style={{ fontSize: '1.6rem' }}>Frequently Asked Questions</h2>
-            <p style={{ fontSize: '0.88rem', color: '#64748b', margin: '4px 0 0 0' }}>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
               Everything you need to know about planning, safety, pricing, and community on SoloTrip.
             </p>
           </div>

@@ -78,10 +78,10 @@ export const DestinationsPage: React.FC = () => {
       {/* Header with Title & View Mode Toggle */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>
         <div>
-          <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#0f172a', marginBottom: 6 }}>
+          <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 6 }}>
             Popular Destinations
           </h1>
-          <p style={{ color: '#64748b', fontSize: '1.05rem' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem' }}>
             Discover iconic towns, tranquil beaches, and Himalayan getaways curated for solo travelers.
           </p>
         </div>
@@ -150,15 +150,15 @@ export const DestinationsPage: React.FC = () => {
             </button>
 
             {cityPickerOpen && (
-              <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 6, background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '8px', boxShadow: '0 10px 25px rgba(0,0,0,0.15)', minWidth: 180, maxHeight: 220, overflowY: 'auto', zIndex: 30 }}>
-                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', padding: '4px 8px', textTransform: 'uppercase' }}>Select Origin City</div>
+              <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 6, background: 'var(--bg-surface)', border: '1px solid var(--border-light)', borderRadius: 12, padding: '8px', boxShadow: 'var(--shadow-xl)', minWidth: 180, maxHeight: 220, overflowY: 'auto', zIndex: 30 }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', padding: '4px 8px', textTransform: 'uppercase' }}>Select Origin City</div>
                 {POPULAR_ORIGIN_CITIES.map((city) => (
                   <button
                     key={city.name}
                     type="button"
                     onClick={() => handleSelectCity(city)}
-                    style={{ width: '100%', textAlign: 'left', padding: '6px 10px', fontSize: '0.82rem', border: 'none', background: 'none', cursor: 'pointer', borderRadius: 6, color: '#1e293b' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = '#f1f5f9')}
+                    style={{ width: '100%', textAlign: 'left', padding: '6px 10px', fontSize: '0.82rem', border: 'none', background: 'none', cursor: 'pointer', borderRadius: 6, color: 'var(--text-primary)' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-subtle)')}
                     onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
                   >
                     📍 {city.name}
@@ -168,14 +168,14 @@ export const DestinationsPage: React.FC = () => {
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#ffffff', padding: '7px 14px', borderRadius: 999, border: '1px solid #e2e8f0', minWidth: 220 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg-surface)', padding: '7px 14px', borderRadius: 999, border: '1px solid var(--border-light)', minWidth: 220 }}>
             <Search size={15} color="#94a3b8" />
             <input
               type="text"
               placeholder="Search destination..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.88rem' }}
+              style={{ border: 'none', outline: 'none', background: 'transparent', width: '100%', fontSize: '0.88rem', color: 'var(--text-primary)' }}
             />
           </div>
         </div>
