@@ -133,20 +133,20 @@ const ROUTE_CIRCUITS: RouteCircuit[] = [
 
 // 6 Categories matching the reference screenshot
 const CATEGORIES = [
-  { id: 'adventure', title: 'Adventure', icon: Mountain, color: '#059669', bgColor: '#ecfdf5' },
-  { id: 'beach', title: 'Beach', icon: Palmtree, color: '#d97706', bgColor: '#fffbeb' },
-  { id: 'heritage', title: 'Heritage', icon: Landmark, color: '#7c3aed', bgColor: '#f5f3ff' },
-  { id: 'nature', title: 'Nature', icon: Trees, color: '#16a34a', bgColor: '#f0fdf4' },
-  { id: 'spiritual', title: 'Spiritual', icon: Flower2, color: '#e11d48', bgColor: '#fff1f2' },
-  { id: 'offbeat', title: 'Offbeat', icon: Navigation, color: '#0284c7', bgColor: '#f0f9ff' }
+  { id: 'adventure', title: 'Adventure', icon: Mountain, color: '#059669', bgColor: '#ecfdf5', darkBg: 'rgba(16, 185, 129, 0.12)', darkColor: '#34d399', darkBorder: 'rgba(16, 185, 129, 0.25)' },
+  { id: 'beach', title: 'Beach', icon: Palmtree, color: '#d97706', bgColor: '#fffbeb', darkBg: 'rgba(245, 158, 11, 0.12)', darkColor: '#fbbf24', darkBorder: 'rgba(245, 158, 11, 0.25)' },
+  { id: 'heritage', title: 'Heritage', icon: Landmark, color: '#7c3aed', bgColor: '#f5f3ff', darkBg: 'rgba(139, 92, 246, 0.12)', darkColor: '#a78bfa', darkBorder: 'rgba(139, 92, 246, 0.25)' },
+  { id: 'nature', title: 'Nature', icon: Trees, color: '#16a34a', bgColor: '#f0fdf4', darkBg: 'rgba(34, 197, 94, 0.12)', darkColor: '#4ade80', darkBorder: 'rgba(34, 197, 94, 0.25)' },
+  { id: 'spiritual', title: 'Spiritual', icon: Flower2, color: '#e11d48', bgColor: '#fff1f2', darkBg: 'rgba(244, 63, 94, 0.12)', darkColor: '#fb7185', darkBorder: 'rgba(244, 63, 94, 0.25)' },
+  { id: 'offbeat', title: 'Offbeat', icon: Navigation, color: '#0284c7', bgColor: '#f0f9ff', darkBg: 'rgba(14, 165, 233, 0.12)', darkColor: '#38bdf8', darkBorder: 'rgba(14, 165, 233, 0.25)' }
 ];
 
 // Why SoloTrip 4 Features
 const WHY_SOLOTRIP_FEATURES = [
-  { id: 1, title: 'Discover', desc: 'Find amazing places curated for solo travelers.', icon: HomeIcon, iconColor: '#059669', bgColor: '#ecfdf5' },
-  { id: 2, title: 'Plan', desc: 'Plan your trip, the way you want.', icon: Edit3, iconColor: '#d97706', bgColor: '#fffbeb' },
-  { id: 3, title: 'Save', desc: 'Save your favorite places and trips.', icon: Heart, iconColor: '#e11d48', bgColor: '#fff1f2' },
-  { id: 4, title: 'Review', desc: 'Share your experience and help others.', icon: Star, iconColor: '#0284c7', bgColor: '#f0f9ff' }
+  { id: 1, title: 'Discover', desc: 'Find amazing places curated for solo travelers.', icon: HomeIcon, iconColor: '#059669', bgColor: '#ecfdf5', darkBg: 'rgba(16, 185, 129, 0.15)', darkColor: '#34d399' },
+  { id: 2, title: 'Plan', desc: 'Plan your trip, the way you want.', icon: Edit3, iconColor: '#d97706', bgColor: '#fffbeb', darkBg: 'rgba(245, 158, 11, 0.15)', darkColor: '#fbbf24' },
+  { id: 3, title: 'Save', desc: 'Save your favorite places and trips.', icon: Heart, iconColor: '#e11d48', bgColor: '#fff1f2', darkBg: 'rgba(244, 63, 94, 0.15)', darkColor: '#fb7185' },
+  { id: 4, title: 'Review', desc: 'Share your experience and help others.', icon: Star, iconColor: '#0284c7', bgColor: '#f0f9ff', darkBg: 'rgba(14, 165, 233, 0.15)', darkColor: '#38bdf8' }
 ];
 
 // Testimonials
@@ -429,14 +429,20 @@ export const Home: React.FC = () => {
               return (
                 <div 
                   key={cat.id} 
-                  className="solotrip-category-card"
-                  style={{ backgroundColor: cat.bgColor }}
+                  className={`solotrip-category-card cat-${cat.id}`}
+                  style={{
+                    '--cat-color': cat.color,
+                    '--cat-bg': cat.bgColor,
+                    '--cat-dark-bg': cat.darkBg,
+                    '--cat-dark-color': cat.darkColor,
+                    '--cat-dark-border': cat.darkBorder
+                  } as React.CSSProperties}
                   onClick={() => navigate(`/destinations?category=${cat.title}`)}
                 >
-                  <div className="solotrip-cat-icon-wrap" style={{ color: cat.color }}>
+                  <div className="solotrip-cat-icon-wrap">
                     <IconComponent size={22} />
                   </div>
-                  <span className="solotrip-cat-label" style={{ color: 'var(--text-primary)' }}>
+                  <span className="solotrip-cat-label">
                     {cat.title}
                   </span>
                 </div>
@@ -597,7 +603,15 @@ export const Home: React.FC = () => {
               const IconComp = item.icon;
               return (
                 <div key={item.id} className="solotrip-why-card">
-                  <div className="solotrip-why-icon-box" style={{ backgroundColor: item.bgColor, color: item.iconColor }}>
+                  <div 
+                    className="solotrip-why-icon-box" 
+                    style={{ 
+                      '--why-bg': item.bgColor, 
+                      '--why-color': item.iconColor,
+                      '--why-dark-bg': item.darkBg,
+                      '--why-dark-color': item.darkColor
+                    } as React.CSSProperties}
+                  >
                     <IconComp size={22} />
                   </div>
                   <div className="solotrip-why-content">

@@ -3002,60 +3002,76 @@ body.dark-theme .comparison-card.positive {
 }
 
 .faq-item {
-  background: #ffffff;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: var(--radius-lg, 16px);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-normal);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .faq-item:hover {
-  border-color: #cbd5e1;
+  border-color: #94a3b8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .faq-item.active {
-  border-color: #0284c7;
-  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.08);
+  border-color: var(--primary, #059669);
+  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.08);
 }
 
 .faq-question-btn {
   width: 100%;
-  padding: 20px 24px;
+  padding: 18px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   text-align: left;
   background: transparent;
+  border: none;
   cursor: pointer;
   gap: 16px;
+  transition: background-color 0.2s ease;
 }
 
 .faq-question-text {
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-primary, #0f172a);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  transition: color 0.2s ease;
+}
+
+.faq-item.active .faq-question-text {
+  color: var(--primary, #059669);
 }
 
 .faq-icon-toggle {
-  color: var(--text-muted);
+  color: var(--text-muted, #64748b);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform var(--transition-fast);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-subtle, #f8fafc);
+  flex-shrink: 0;
+  transition: transform 0.25s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
 .faq-item.active .faq-icon-toggle {
-  color: var(--accent-blue);
+  color: #ffffff;
+  background: var(--primary, #059669);
   transform: rotate(180deg);
 }
 
 .faq-answer {
   padding: 0 24px 20px;
   font-size: 0.94rem;
-  color: var(--text-secondary);
-  line-height: 1.65;
-  border-top: 1px solid #f1f5f9;
+  color: var(--text-secondary, #475569);
+  line-height: 1.7;
+  border-top: 1px solid var(--border-light, #f1f5f9);
   padding-top: 16px;
 }
 
@@ -5055,24 +5071,73 @@ body.dark-theme .comparison-card.positive {
   justify-content: center;
   gap: 8px;
   cursor: pointer;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  background-color: var(--cat-bg, #f8fafc);
+  border: 1px solid var(--cat-border, rgba(0, 0, 0, 0.05));
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.2s ease;
+  user-select: none;
 }
 
 .solotrip-category-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px var(--cat-shadow, rgba(0, 0, 0, 0.08));
 }
 
 .solotrip-cat-icon-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--cat-color, #059669);
+  transition: transform 0.2s ease;
+}
+
+.solotrip-category-card:hover .solotrip-cat-icon-wrap {
+  transform: scale(1.15) rotate(3deg);
 }
 
 .solotrip-cat-label {
   font-weight: 700;
   font-size: 0.88rem;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+  transition: color 0.2s ease;
+}
+
+/* Category Specific Light Palette */
+.solotrip-category-card.cat-adventure {
+  --cat-bg: #ecfdf5;
+  --cat-color: #059669;
+  --cat-border: rgba(5, 150, 105, 0.18);
+  --cat-shadow: rgba(5, 150, 105, 0.18);
+}
+.solotrip-category-card.cat-beach {
+  --cat-bg: #fffbeb;
+  --cat-color: #d97706;
+  --cat-border: rgba(217, 119, 6, 0.18);
+  --cat-shadow: rgba(217, 119, 6, 0.18);
+}
+.solotrip-category-card.cat-heritage {
+  --cat-bg: #f5f3ff;
+  --cat-color: #7c3aed;
+  --cat-border: rgba(124, 58, 237, 0.18);
+  --cat-shadow: rgba(124, 58, 237, 0.18);
+}
+.solotrip-category-card.cat-nature {
+  --cat-bg: #f0fdf4;
+  --cat-color: #16a34a;
+  --cat-border: rgba(22, 163, 74, 0.18);
+  --cat-shadow: rgba(22, 163, 74, 0.18);
+}
+.solotrip-category-card.cat-spiritual {
+  --cat-bg: #fff1f2;
+  --cat-color: #e11d48;
+  --cat-border: rgba(225, 29, 72, 0.18);
+  --cat-shadow: rgba(225, 29, 72, 0.18);
+}
+.solotrip-category-card.cat-offbeat {
+  --cat-bg: #f0f9ff;
+  --cat-color: #0284c7;
+  --cat-border: rgba(2, 132, 199, 0.18);
+  --cat-shadow: rgba(2, 132, 199, 0.18);
 }
 
 /* 6. Plan Your Trip (Route Planner & Map) */
@@ -5489,6 +5554,9 @@ body.dark-theme .comparison-card.positive {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  background-color: var(--why-bg, #ecfdf5);
+  color: var(--why-color, #059669);
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
 .solotrip-why-content {
@@ -6288,57 +6356,138 @@ body.dark-theme .mobile-theme-row {
 }
 
 /* 2. Hero Search Box & Popover */
-body.dark-theme .solotrip-search-card {
-  background: #111a2e;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+body.dark-theme .solotrip-search-card,
+[data-theme='dark'] .solotrip-search-card {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 body.dark-theme .solotrip-search-card:hover,
-body.dark-theme .solotrip-search-card:focus-within {
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7), 0 0 0 2px #2dd4bf, 0 0 28px rgba(45, 212, 191, 0.25);
+body.dark-theme .solotrip-search-card:focus-within,
+[data-theme='dark'] .solotrip-search-card:hover,
+[data-theme='dark'] .solotrip-search-card:focus-within {
+  border-color: #34d399;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7), 0 0 0 2px rgba(52, 211, 153, 0.35), 0 0 28px rgba(52, 211, 153, 0.2);
 }
 
-body.dark-theme .solotrip-search-input {
-  color: #f8fafc;
+body.dark-theme .solotrip-search-icon,
+[data-theme='dark'] .solotrip-search-icon {
+  color: #34d399;
 }
 
-body.dark-theme .solotrip-search-input::placeholder {
+body.dark-theme .solotrip-search-input,
+body.dark-theme input.solotrip-search-input,
+body.dark-theme input[type="text"].solotrip-search-input,
+[data-theme='dark'] .solotrip-search-input,
+[data-theme='dark'] input.solotrip-search-input,
+[data-theme='dark'] input[type="text"].solotrip-search-input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #f8fafc !important;
+  padding: 0 !important;
+}
+
+body.dark-theme .solotrip-search-input:focus,
+body.dark-theme input.solotrip-search-input:focus,
+body.dark-theme input[type="text"].solotrip-search-input:focus,
+[data-theme='dark'] .solotrip-search-input:focus,
+[data-theme='dark'] input.solotrip-search-input:focus,
+[data-theme='dark'] input[type="text"].solotrip-search-input:focus {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+body.dark-theme .solotrip-search-input::placeholder,
+[data-theme='dark'] .solotrip-search-input::placeholder {
   color: #64748b;
 }
 
-body.dark-theme .solotrip-clear-btn {
+body.dark-theme .solotrip-clear-btn,
+[data-theme='dark'] .solotrip-clear-btn {
   background: rgba(255, 255, 255, 0.1);
   color: #94a3b8;
 }
 
-body.dark-theme .solotrip-search-divider {
+body.dark-theme .solotrip-search-divider,
+[data-theme='dark'] .solotrip-search-divider {
   background: rgba(255, 255, 255, 0.12);
 }
 
-body.dark-theme .solotrip-category-select {
-  color: #cbd5e1;
+body.dark-theme .solotrip-category-select,
+body.dark-theme select.solotrip-category-select,
+[data-theme='dark'] .solotrip-category-select,
+[data-theme='dark'] select.solotrip-category-select {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #cbd5e1 !important;
+  padding: 6px 26px 6px 8px !important;
 }
 
-body.dark-theme .solotrip-category-select option {
+body.dark-theme .solotrip-category-select:focus,
+body.dark-theme select.solotrip-category-select:focus,
+[data-theme='dark'] .solotrip-category-select:focus,
+[data-theme='dark'] select.solotrip-category-select:focus {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+body.dark-theme .solotrip-category-select option,
+[data-theme='dark'] .solotrip-category-select option {
   background: #0f172a;
   color: #f8fafc;
 }
 
-body.dark-theme .solotrip-category-select:hover {
+body.dark-theme .solotrip-category-select:hover,
+[data-theme='dark'] .solotrip-category-select:hover {
   color: #34d399;
 }
 
-body.dark-theme .solotrip-suggestions-popover {
+body.dark-theme .solotrip-select-arrow,
+[data-theme='dark'] .solotrip-select-arrow {
+  color: #94a3b8;
+}
+
+body.dark-theme .solotrip-search-category-col:hover .solotrip-select-arrow,
+[data-theme='dark'] .solotrip-search-category-col:hover .solotrip-select-arrow {
+  color: #34d399;
+}
+
+body.dark-theme .solotrip-search-btn,
+[data-theme='dark'] .solotrip-search-btn {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+body.dark-theme .solotrip-search-btn:hover,
+[data-theme='dark'] .solotrip-search-btn:hover {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+}
+
+body.dark-theme .solotrip-suggestions-popover,
+[data-theme='dark'] .solotrip-suggestions-popover {
   background: #0f172a;
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75);
 }
 
-body.dark-theme .solotrip-suggestion-item {
+body.dark-theme .solotrip-suggestion-item,
+[data-theme='dark'] .solotrip-suggestion-item {
   color: #cbd5e1;
 }
 
-body.dark-theme .solotrip-suggestion-item:hover {
+body.dark-theme .solotrip-suggestion-item:hover,
+[data-theme='dark'] .solotrip-suggestion-item:hover {
   background: #1e293b;
   color: #34d399;
 }
@@ -6395,19 +6544,72 @@ body.dark-theme .dest-card-tag {
   border: 1px solid rgba(56, 189, 248, 0.2);
 }
 
-/* 5. Category Cards */
-body.dark-theme .solotrip-category-card {
-  background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* 5. Category Cards in Dark Mode */
+body.dark-theme .solotrip-category-card,
+[data-theme='dark'] .solotrip-category-card {
+  background-color: var(--cat-dark-bg, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--cat-dark-border, rgba(255, 255, 255, 0.1));
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
 }
 
-body.dark-theme .solotrip-category-card:hover {
-  background: #141e33;
-  border-color: rgba(52, 211, 153, 0.3);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+body.dark-theme .solotrip-category-card.cat-adventure,
+[data-theme='dark'] .solotrip-category-card.cat-adventure {
+  background-color: rgba(16, 185, 129, 0.12);
+  border-color: rgba(52, 211, 153, 0.25);
+  --cat-color: #34d399;
+  --cat-shadow: rgba(52, 211, 153, 0.3);
+}
+body.dark-theme .solotrip-category-card.cat-beach,
+[data-theme='dark'] .solotrip-category-card.cat-beach {
+  background-color: rgba(245, 158, 11, 0.12);
+  border-color: rgba(251, 191, 36, 0.25);
+  --cat-color: #fbbf24;
+  --cat-shadow: rgba(251, 191, 36, 0.3);
+}
+body.dark-theme .solotrip-category-card.cat-heritage,
+[data-theme='dark'] .solotrip-category-card.cat-heritage {
+  background-color: rgba(139, 92, 246, 0.12);
+  border-color: rgba(167, 139, 250, 0.25);
+  --cat-color: #a78bfa;
+  --cat-shadow: rgba(167, 139, 250, 0.3);
+}
+body.dark-theme .solotrip-category-card.cat-nature,
+[data-theme='dark'] .solotrip-category-card.cat-nature {
+  background-color: rgba(34, 197, 94, 0.12);
+  border-color: rgba(74, 222, 128, 0.25);
+  --cat-color: #4ade80;
+  --cat-shadow: rgba(74, 222, 128, 0.3);
+}
+body.dark-theme .solotrip-category-card.cat-spiritual,
+[data-theme='dark'] .solotrip-category-card.cat-spiritual {
+  background-color: rgba(244, 63, 94, 0.12);
+  border-color: rgba(251, 113, 133, 0.25);
+  --cat-color: #fb7185;
+  --cat-shadow: rgba(251, 113, 133, 0.3);
+}
+body.dark-theme .solotrip-category-card.cat-offbeat,
+[data-theme='dark'] .solotrip-category-card.cat-offbeat {
+  background-color: rgba(14, 165, 233, 0.12);
+  border-color: rgba(56, 189, 248, 0.25);
+  --cat-color: #38bdf8;
+  --cat-shadow: rgba(56, 189, 248, 0.3);
 }
 
-body.dark-theme .solotrip-cat-label {
+body.dark-theme .solotrip-category-card:hover,
+[data-theme='dark'] .solotrip-category-card:hover {
+  background-color: var(--cat-dark-bg, rgba(255, 255, 255, 0.08));
+  border-color: var(--cat-color, #34d399);
+  box-shadow: 0 8px 24px var(--cat-shadow, rgba(0, 0, 0, 0.45));
+  transform: translateY(-3px);
+}
+
+body.dark-theme .solotrip-cat-icon-wrap,
+[data-theme='dark'] .solotrip-cat-icon-wrap {
+  color: var(--cat-color, #34d399);
+}
+
+body.dark-theme .solotrip-cat-label,
+[data-theme='dark'] .solotrip-cat-label {
   color: #f8fafc;
 }
 
@@ -6525,17 +6727,26 @@ body.dark-theme .solotrip-map-origin-overlay {
 }
 
 /* 7. Why SoloTrip & Testimonials */
-body.dark-theme .solotrip-why-card {
+body.dark-theme .solotrip-why-card,
+[data-theme='dark'] .solotrip-why-card {
   background: #0f172a;
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
-body.dark-theme .solotrip-why-title {
+body.dark-theme .solotrip-why-icon-box,
+[data-theme='dark'] .solotrip-why-icon-box {
+  background-color: var(--why-dark-bg, rgba(52, 211, 153, 0.15));
+  color: var(--why-dark-color, #34d399);
+}
+
+body.dark-theme .solotrip-why-title,
+[data-theme='dark'] .solotrip-why-title {
   color: #f8fafc;
 }
 
-body.dark-theme .solotrip-why-desc {
+body.dark-theme .solotrip-why-desc,
+[data-theme='dark'] .solotrip-why-desc {
   color: #94a3b8;
 }
 
@@ -6713,13 +6924,13 @@ body.dark-theme .modal-close-btn:hover {
   color: #ffffff;
 }
 
-body.dark-theme input[type="text"],
+body.dark-theme input[type="text"]:not(.solotrip-search-input),
 body.dark-theme input[type="email"],
 body.dark-theme input[type="password"],
 body.dark-theme input[type="number"],
 body.dark-theme input[type="date"],
 body.dark-theme textarea,
-body.dark-theme select,
+body.dark-theme select:not(.solotrip-category-select),
 body.dark-theme .form-input,
 body.dark-theme .form-control {
   background: #141e33;
@@ -6727,9 +6938,9 @@ body.dark-theme .form-control {
   color: #f8fafc;
 }
 
-body.dark-theme input:focus,
+body.dark-theme input:not(.solotrip-search-input):focus,
 body.dark-theme textarea:focus,
-body.dark-theme select:focus {
+body.dark-theme select:not(.solotrip-category-select):focus {
   border-color: #34d399;
   outline: none;
   box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.15);
@@ -6894,3 +7105,54 @@ body.dark-theme .btn-outline:hover {
   background: #141e33;
   border-color: #34d399;
 }
+
+/* 15. FAQ Accordion in Dark Mode */
+body.dark-theme .faq-item,
+[data-theme='dark'] .faq-item {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-theme .faq-item:hover,
+[data-theme='dark'] .faq-item:hover {
+  background: #131d31;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+body.dark-theme .faq-item.active,
+[data-theme='dark'] .faq-item.active {
+  background: #131d31;
+  border-color: rgba(52, 211, 153, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 0 20px rgba(52, 211, 153, 0.08);
+}
+
+body.dark-theme .faq-question-text,
+[data-theme='dark'] .faq-question-text {
+  color: #f8fafc;
+}
+
+body.dark-theme .faq-item.active .faq-question-text,
+[data-theme='dark'] .faq-item.active .faq-question-text {
+  color: #34d399;
+}
+
+body.dark-theme .faq-icon-toggle,
+[data-theme='dark'] .faq-icon-toggle {
+  background: #1e293b;
+  color: #94a3b8;
+}
+
+body.dark-theme .faq-item.active .faq-icon-toggle,
+[data-theme='dark'] .faq-item.active .faq-icon-toggle {
+  background: #059669;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4);
+}
+
+body.dark-theme .faq-answer,
+[data-theme='dark'] .faq-answer {
+  color: #cbd5e1;
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
